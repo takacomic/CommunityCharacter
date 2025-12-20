@@ -95,7 +95,7 @@ namespace CommunityCharacter
             if (CharacterControllerCommunity.characterControllerCommunity == null) return true;
             if (CharacterControllerCommunity.currentSkinType != Festa.SkinType) return true;
             if (!__instance.CanEmitLight()) return true;
-            if (UnityEngine.Random.Range(0, 11) < 9f) return true;
+            if (UnityEngine.Random.Range(0, 31) < 29f) return true;
 
             Il2CppSystem.Collections.Generic.List<float> chances = new Il2CppSystem.Collections.Generic.List<float>();
             chances.Add(3f);
@@ -483,16 +483,11 @@ namespace CommunityCharacter
 
         internal static void MakeEnemyFollower()
         {
-            Melon<CommunityCharacterMod>.Logger.Msg("Make 1");
             if (characterControllerCommunity._gameManager.GetLatestKilledEnemyThatCanBeFollower() == null) return;
-            Melon<CommunityCharacterMod>.Logger.Msg("Make 2");
             if (characterControllerCommunity._gameManager.GetNumAliveEnemyFollowers(characterControllerCommunity) >= 5) return;
-            Melon<CommunityCharacterMod>.Logger.Msg("Make 3");
             FollowerEnemy_CharacterController enemyFollower = characterControllerCommunity._gameManager.AddLastEnemyFollower(characterControllerCommunity);
             if (enemyFollower == null) return;
-            Melon<CommunityCharacterMod>.Logger.Msg("Make 4");
             if (enemyFollower.HasSetName) return;
-            Melon<CommunityCharacterMod>.Logger.Msg("Make 5");
             CharacterData enemyData = enemyFollower.CurrentCharacterData;
             enemyData.charName = $"{enemyData.charName} {followerNum}";
             enemyFollower.HasSetName = true;

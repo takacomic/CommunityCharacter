@@ -179,7 +179,7 @@ namespace CommunityCharacter
         {
             JObject jObject = new JObject();
 
-            jObject["charm"] = 1f;
+            jObject["charm"] = 0.25f;
 
             return jObject;
         }
@@ -189,7 +189,7 @@ namespace CommunityCharacter
             skin["moveSpeed"] = Movespeed;
             skin["regen"] = Regen;
             skin["cooldown"] = Cooldown;
-            skin["description"] = "Has a hidden Embrace of Gaea. Can Fly. Gains +1 Charm and Summons light sources every level.";
+            skin["description"] = "Has a hidden Embrace of Gaea. Can Fly. Gains +0.25 Charm and Summons light sources every level.";
             skin["hiddenWeapons"] = JArray.Parse(HiddenWeapons);
             skin["onEveryLevelUp"] = OnEveryLevelUp();
 

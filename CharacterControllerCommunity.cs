@@ -66,6 +66,20 @@ namespace CommunityCharacter
             retalTimer = TimerHelper.RegisterMillis(250f, action);
         }
     }
+    
+    [HarmonyPatch(typeof(Stage))]
+    static class StagePatch
+    {
+        [HarmonyPatch(nameof(Stage.DebugSpawnDestructibles))]
+        [HarmonyPrefix]
+        public static bool DebugSpawnDestructibles_Prefix()
+        {
+            if(CharacterControllerCommunity.characterControllerCommunity._characterType == (CharacterType)20000)
+                if(CharacterControllerCommunity.currentSkinType == Festa.SkinType) return false;
+
+            return true;
+        }
+    }
 
     [HarmonyPatch(typeof(TreasureChest))]
     static class TreasureChestPatch
@@ -152,7 +166,7 @@ namespace CommunityCharacter
         internal static string currentSkinType;
         static int killsToTrigger;
         static int zetaTriggerEffect;
-        static int hermiesTrigger;
+        static float hermiesTrigger;
         static Timer hermiesMove;
         static EggFloat moveSpeed;
         static int hermiesLevel;
@@ -173,7 +187,7 @@ namespace CommunityCharacter
             characterControllerCommunity.IsCriticalHPEnabled = true;
             characterControllerCommunity.HasAnyCriticalHPSkill = true;
             characterControllerCommunity.OnCriticalHP = new Action(CriticalHp);
-            hermiesTrigger = 1;
+            hermiesTrigger = 0.33f;
             hermiesLevel = 1;
             opalFly = false;
             followerNum = 1;
@@ -309,8 +323,7 @@ namespace CommunityCharacter
             foreach (Pickup a in characterControllerCommunity._gameManager._gems)
             {
                 Gem gem = a.Cast<Gem>();
-                float bless = characterControllerCommunity.PAmount() + Mathf.Log(characterControllerCommunity._gameManager._gems.Count)/UnityEngine.Random.Range(1,10);
-                Melon<CommunityCharacterMod>.Logger.Msg(bless);
+                float bless = characterControllerCommunity.PAmount() + Mathf.Log(characterControllerCommunity._gameManager._gems.Count)/UnityEngine.Random.Range(1,7);
                 gem.BlessColor(bless, i);
                 pickups.Add(gem);
                 i++;
@@ -391,8 +404,8 @@ namespace CommunityCharacter
 
         static Action<float> HermiesMovespeedGive = (float time) =>
         {
-            if ((int)time != hermiesTrigger) return;
-            hermiesTrigger++;
+            if (time < hermiesTrigger) return;
+            hermiesTrigger+= 0.33f;
             characterControllerCommunity._playerStats.MoveSpeed += 0.01f;
         };
         static Action HermiesMovespeedTake = () =>

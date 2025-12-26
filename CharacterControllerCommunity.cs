@@ -17,6 +17,7 @@ using Il2CppVampireSurvivors.Signals;
 using Il2CppVampireSurvivors.Tools;
 using MelonLoader;
 using System.Runtime.InteropServices;
+using Il2CppVampireSurvivors.Graphics;
 using Unity.Mathematics;
 using UnityEngine;
 using Timer = Il2CppVampireSurvivors.Framework.TimerSystem.Timer;
@@ -173,6 +174,7 @@ namespace CommunityCharacter
         static bool opalFly;
         static int followerNum;
         static bool betaVamSub;
+        internal static Dictionary<string, Il2CppSystem.Collections.Generic.List<Sprite>> sprites = new Dictionary<string, Il2CppSystem.Collections.Generic.List<Sprite>>();
 
         [HarmonyPatch(nameof(CharacterController.AfterFullInitialization))]
         [HarmonyPostfix]
@@ -192,6 +194,18 @@ namespace CommunityCharacter
             opalFly = false;
             followerNum = 1;
             betaVamSub = false;
+            if (currentSkinType == Zeta.SkinType)
+            {
+                __instance._spriteAnimation.AddAnimation("black", SpriteManager.GetAnimationFrames("zeta_black_", 1, 4, new Vector2(0.5f, 0f), "character_community_zeta_black", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
+                __instance._spriteAnimation.AddAnimation("moon", SpriteManager.GetAnimationFrames("zeta_moon_", 1, 4, new Vector2(0.5f, 0f), "character_community_zeta_moon", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
+                __instance._spriteAnimation.AddAnimation("city", SpriteManager.GetAnimationFrames("zeta_city_", 1, 4, new Vector2(0.5f, 0f), "character_community_zeta_city", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
+                __instance._spriteAnimation.AddAnimation("stone", SpriteManager.GetAnimationFrames("zeta_stone_", 1, 4, new Vector2(0.5f, 0f), "character_community_zeta_stone", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
+                __instance._spriteAnimation.AddAnimation("sun", SpriteManager.GetAnimationFrames("zeta_sun_", 1, 4, new Vector2(0.5f, 0f), "character_community_zeta_sun", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
+                __instance._spriteAnimation.AddAnimation("volcano", SpriteManager.GetAnimationFrames("zeta_volcano_", 1, 4, new Vector2(0.5f, 0f), "character_community_zeta_volcano", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
+                __instance._spriteAnimation.AddAnimation("seawinds", SpriteManager.GetAnimationFrames("zeta_seawinds_", 1, 4, new Vector2(0.5f, 0f), "character_community_zeta_seawinds", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
+                __instance._spriteAnimation.AddAnimation("directer", SpriteManager.GetAnimationFrames("zeta_directer_", 1, 4, new Vector2(0.5f, 0f), "character_community_zeta_directer", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
+                __instance._spriteAnimation.SetAnimation("black");
+            }
         }
         [HarmonyPatch(nameof(CharacterController.OnUpdate))]
         [HarmonyPostfix]
@@ -364,24 +378,31 @@ namespace CommunityCharacter
             {
                 case 1:
                     characterControllerCommunity._gameManager.MakeAndActivatePickup(ItemType.CLOVER);
+                    characterControllerCommunity.Anims.SetAnimation("moon");
                     break;
                 case 2:
                     characterControllerCommunity._gameManager.MakeAndActivatePickup(ItemType.ROSARY);
+                    characterControllerCommunity.Anims.SetAnimation("city");
                     break;
                 case 3:
                     ZetaGemEffect();
+                    characterControllerCommunity.Anims.SetAnimation("stone");
                     break;
                 case 4:
                     characterControllerCommunity._gameManager.TriggerGoldFever(20000);
+                    characterControllerCommunity.Anims.SetAnimation("sun");
                     break;
                 case 5:
                     ZetaHeartEffect();
+                    characterControllerCommunity.Anims.SetAnimation("volcano");
                     break;
                 case 6:
                     ZetaChestEffect();
+                    characterControllerCommunity.Anims.SetAnimation("seawinds");
                     break;
                 case 7:
                     characterControllerCommunity._gameManager.MakeAndActivatePickup(ItemType.VACUUM);
+                    characterControllerCommunity.Anims.SetAnimation("directer");
                     break;
                 default:
                     characterControllerCommunity._gameManager.MakeAndActivatePickup(ItemType.CLOVER);
@@ -392,6 +413,7 @@ namespace CommunityCharacter
                     ZetaChestEffect();
                     characterControllerCommunity._gameManager.MakeAndActivatePickup(ItemType.VACUUM);
                     zetaTriggerEffect = 0;
+                    characterControllerCommunity.Anims.SetAnimation("black");
                     break;
             }
 

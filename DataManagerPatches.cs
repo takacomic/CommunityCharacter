@@ -38,6 +38,14 @@ namespace CommunityCharacter
             SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_tempo.png"), "tempo", 4);
             SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_vam.png"), "vam", 4);
             SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta.png"), "zeta", 4);
+            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_black.png"), "zeta_black", 4);
+            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_city.png"), "zeta_city", 4);
+            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_directer.png"), "zeta_directer", 4);
+            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_moon.png"), "zeta_moon", 4);
+            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_seawinds.png"), "zeta_seawinds", 4);
+            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_stone.png"), "zeta_stone", 4);
+            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_sun.png"), "zeta_sun", 4);
+            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_volcano.png"), "zeta_volcano", 4);
         }
 
         internal static readonly JsonSerializerSettings SerializerSettings = new()

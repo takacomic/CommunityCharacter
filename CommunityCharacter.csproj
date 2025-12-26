@@ -39,6 +39,24 @@
     <EmbeddedResource Include="Assets\character_community_tempo.png" />
     <EmbeddedResource Include="Assets\character_community_vam.png" />
     <EmbeddedResource Include="Assets\character_community_zeta.png" />
+    <None Remove="Assets\character_community_zeta_black.png" />
+    <EmbeddedResource Include="Assets\character_community_zeta_black.png" />
+    <None Remove="Assets\character_community_zeta_city.png" />
+    <EmbeddedResource Include="Assets\character_community_zeta_city.png" />
+    <None Remove="Assets\character_community_zeta_directer.png" />
+    <EmbeddedResource Include="Assets\character_community_zeta_directer.png" />
+    <None Remove="Assets\character_community_zeta_moon.png" />
+    <EmbeddedResource Include="Assets\character_community_zeta_moon.png" />
+    <None Remove="Assets\character_community_zeta_seawinds.png" />
+    <EmbeddedResource Include="Assets\character_community_zeta_seawinds.png" />
+    <None Remove="Assets\character_community_zeta_stone.png" />
+    <EmbeddedResource Include="Assets\character_community_zeta_stone.png" />
+    <None Remove="Assets\character_community_zeta_sun.png" />
+    <EmbeddedResource Include="Assets\character_community_zeta_sun.png" />
+    <None Remove="Assets\character_community_zeta_volcano.png" />
+    <EmbeddedResource Include="Assets\character_community_zeta_volcano.png" />
+    <None Remove="Assets\character_community_zeta_new.png" />
+    <EmbeddedResource Include="Assets\character_community_zeta_new.png" />
   </ItemGroup>
 
   <ItemGroup>

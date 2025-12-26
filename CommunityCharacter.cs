@@ -16,7 +16,7 @@ namespace CommunityCharacter
         public const string Description = "";
         public const string Author = "Takacomic";
         public const string Company = "CorruptedInfluences";
-        public const string Version = "0.1.0";
+        public const string Version = "0.2.0";
         public const string Download = "https://github.com/takacomic/.../latest";
     }
     public class CommunityCharacterMod : MelonMod

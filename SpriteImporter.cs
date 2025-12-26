@@ -51,21 +51,17 @@ namespace CommunityCharacter
             }
 
         }
-        internal static void SpriteStrip(string textureName, string name, int spriteCount, int spriteRow = 1, int spriteRowToRead = 0)
+        internal static void SpriteStrip(string textureName, string name, int spriteCount)
         {
             Texture2D texture = textures[textureName];
             int baseWidth = texture.width / spriteCount;
-            int baseHeight = texture.height / spriteRow;
-            Il2CppSystem.Collections.Generic.List<Sprite> sprites = new Il2CppSystem.Collections.Generic.List<Sprite>();
 
             for (int i = 0; i < spriteCount; i++)
             {
                 string nameAppend = name + "_0" + (i+1);
-                Sprite sprite = LoadSprite(texture, new Rect(baseWidth * i, baseHeight * spriteRowToRead, baseWidth, baseHeight), nameAppend);
-                sprites.Add(sprite);
+                Sprite sprite = LoadSprite(texture, new Rect(baseWidth * i, 0, baseWidth, texture.height), nameAppend);
                 SpriteManager.RegisterSprite(sprite);
             }
-            CharacterControllerCommunity.sprites.Add(name, sprites);
         }
         internal static Sprite LoadSprite(Texture2D texture, Rect rect, string name)
         {

@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
-using Il2CppVampireSurvivors.App.Tools;
 using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Data.Characters;
 using Il2CppVampireSurvivors.Data.Stage;
@@ -15,8 +14,6 @@ using Il2CppVampireSurvivors.Objects.Items;
 using Il2CppVampireSurvivors.Objects.Pickups;
 using Il2CppVampireSurvivors.Signals;
 using Il2CppVampireSurvivors.Tools;
-using MelonLoader;
-using System.Runtime.InteropServices;
 using Il2CppVampireSurvivors.Graphics;
 using Unity.Mathematics;
 using UnityEngine;
@@ -174,7 +171,6 @@ namespace CommunityCharacter
         static bool opalFly;
         static int followerNum;
         static bool betaVamSub;
-        internal static Dictionary<string, Il2CppSystem.Collections.Generic.List<Sprite>> sprites = new Dictionary<string, Il2CppSystem.Collections.Generic.List<Sprite>>();
 
         [HarmonyPatch(nameof(CharacterController.AfterFullInitialization))]
         [HarmonyPostfix]

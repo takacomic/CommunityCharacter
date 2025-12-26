@@ -56,7 +56,6 @@
     <None Remove="Assets\character_community_zeta_volcano.png" />
     <EmbeddedResource Include="Assets\character_community_zeta_volcano.png" />
     <None Remove="Assets\character_community_zeta_new.png" />
-    <EmbeddedResource Include="Assets\character_community_zeta_new.png" />
   </ItemGroup>
 
   <ItemGroup>

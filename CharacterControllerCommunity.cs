@@ -153,15 +153,27 @@ namespace CommunityCharacter
             if (__instance.PlayerOne.CurrentCharacterData.currentSkin.ToString() != Beta.SkinType) return;
             if (!treasure.prizeTypes.Contains(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION)))
             {
+                treasure.prizeTypes.Clear();
                 treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION));
+                treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EXISTING_ANY));
+                treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION));
+                treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EXISTING_ANY));
+                treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EXISTING_ANY));
+                __result.SetData(ItemType.TREASURE, treasure);
+                __result.SetWithEvo();
             }
             else if (!treasure.hasArcana)
             {
+                treasure.prizeTypes.Clear();
                 treasure.hasArcana = true;
                 treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVO_ARCANA));
-                __result.SetArcana(treasure.hasArcana);
+                treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION));
+                treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION));
+                treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION));
+                treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION));
+                __result.SetData(ItemType.TREASURE, treasure);
+                __result.SetArcana(true);
             }
-            __result.SetData(ItemType.TREASURE, treasure);
         }
     }
 

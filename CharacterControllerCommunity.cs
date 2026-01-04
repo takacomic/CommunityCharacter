@@ -1,14 +1,11 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
 using Il2CppDG.Tweening;
-using Il2CppInterop.Runtime.Runtime;
 using Il2CppVampireSurvivors.App.Tools;
 using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Data.Characters;
 using Il2CppVampireSurvivors.Data.Stage;
 using Il2CppVampireSurvivors.Framework;
-using Il2CppVampireSurvivors.Framework.DLC;
-using Il2CppVampireSurvivors.Framework.Loading;
 using Il2CppVampireSurvivors.Framework.NumberTypes;
 using Il2CppVampireSurvivors.Framework.Phaser;
 using Il2CppVampireSurvivors.Framework.PhaserTweens;
@@ -20,7 +17,6 @@ using Il2CppVampireSurvivors.Objects.Pickups;
 using Il2CppVampireSurvivors.Signals;
 using Il2CppVampireSurvivors.Tools;
 using Il2CppVampireSurvivors.Graphics;
-using Il2CppVampireSurvivors.UI.Player;
 using MelonLoader;
 using Unity.Mathematics;
 using UnityEngine;
@@ -151,7 +147,7 @@ namespace CommunityCharacter
         {
             if (__instance.PlayerOne != CharacterControllerCommunity.characterControllerCommunity) return;
             if (__instance.PlayerOne.CurrentCharacterData.currentSkin.ToString() != Beta.SkinType) return;
-            if (!treasure.prizeTypes.Contains(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION)))
+            if (treasure.prizeTypes.IndexOf(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION)) > -1)
             {
                 treasure.prizeTypes.Clear();
                 treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION));
@@ -537,6 +533,32 @@ namespace CommunityCharacter
         internal static void ZetaChestEffect()
         {
             //TODO implement
+            List<Pickup> pickups = new List<Pickup>();
+            List<Pickup> pickupsRemove = new List<Pickup>();
+            foreach (Pickup a in PickupManager.PickupItems)
+            {
+                if(pickups.Contains(a)) continue;
+                if (a.PickupType != ItemType.TREASURE) continue;
+                TreasureChest treasureC = a.Cast<TreasureChest>();
+                Treasure treasure = treasureC._treasure;
+                treasure.level = 3;
+                treasure.prizeTypes.Clear();
+                treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION));
+                treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION));
+                treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION));
+                treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION));
+                treasure.prizeTypes.Add(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION));
+                treasureC.SetData(ItemType.TREASURE, treasure);
+                treasureC.SetFrame("BoxOpen3");
+                pickups.Add(treasureC);
+                PickupManager.PickupItems.Add(treasureC);
+                pickupsRemove.Add(a);
+            }
+
+            foreach (Pickup a in pickupsRemove)
+            {
+                PickupManager.PickupItems.Remove(a);
+            }
         }
         internal static void ZetaAspectEffects()
         {

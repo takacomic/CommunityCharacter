@@ -1,5 +1,8 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
+using Il2CppDG.Tweening;
+using Il2CppInterop.Runtime.Runtime;
+using Il2CppVampireSurvivors.App.Tools;
 using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Data.Characters;
 using Il2CppVampireSurvivors.Data.Stage;
@@ -7,6 +10,8 @@ using Il2CppVampireSurvivors.Framework;
 using Il2CppVampireSurvivors.Framework.DLC;
 using Il2CppVampireSurvivors.Framework.Loading;
 using Il2CppVampireSurvivors.Framework.NumberTypes;
+using Il2CppVampireSurvivors.Framework.Phaser;
+using Il2CppVampireSurvivors.Framework.PhaserTweens;
 using Il2CppVampireSurvivors.Framework.TimerSystem;
 using Il2CppVampireSurvivors.Objects;
 using Il2CppVampireSurvivors.Objects.Characters;
@@ -15,15 +20,18 @@ using Il2CppVampireSurvivors.Objects.Pickups;
 using Il2CppVampireSurvivors.Signals;
 using Il2CppVampireSurvivors.Tools;
 using Il2CppVampireSurvivors.Graphics;
+using Il2CppVampireSurvivors.UI.Player;
+using MelonLoader;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.UI;
 using Timer = Il2CppVampireSurvivors.Framework.TimerSystem.Timer;
 
 
 namespace CommunityCharacter
 {
 
-    [HarmonyPatch(typeof(LoadingManager))]
+    /*[HarmonyPatch(typeof(LoadingManager))]
     static class LoadingManagerPatch
     {
         [HarmonyPatch(nameof(LoadingManager.MountDlc))]
@@ -36,7 +44,7 @@ namespace CommunityCharacter
             if (!string.IsNullOrEmpty(path) && path != Directory.GetCurrentDirectory())
                 __instance.MountedPaths.TryAdd(dlcType, path);
         }
-    }
+    }*/
 
     [HarmonyPatch(typeof(EnemyController))]
     static class EnemyControllerPatch
@@ -168,9 +176,21 @@ namespace CommunityCharacter
         static Timer hermiesMove;
         static EggFloat moveSpeed;
         static int hermiesLevel;
+        static int opalLevel;
         static bool opalFly;
         static int followerNum;
         static bool betaVamSub;
+        static MultiTargetTween outerTween;
+        static MultiTargetTween innerTween;
+        static PhaserSprite outerSprite;
+        static PhaserSprite innerSprite;
+        static float chargeTime;
+        static Image healthBar;
+        static Image healthBarFill;
+        static bool isCharging;
+        static float maxChargeTime = 8000f;
+        static MultiTargetTween scaleTween;
+        private static bool changingSkin;
 
         [HarmonyPatch(nameof(CharacterController.AfterFullInitialization))]
         [HarmonyPostfix]
@@ -178,7 +198,10 @@ namespace CommunityCharacter
         {
             if (__instance._characterType != (CharacterType)20000) return;
 
+            foreach( WeaponType w in LevelUpFactory._excludedWeapons)
+                MelonLogger.Msg(w.ToString());
             characterControllerCommunity = __instance;
+            changingSkin = false;
             currentSkinType = __instance.CurrentCharacterData.currentSkin.ToString();
             killsToTrigger = 100;
             zetaTriggerEffect = 1;
@@ -187,10 +210,11 @@ namespace CommunityCharacter
             characterControllerCommunity.OnCriticalHP = new Action(CriticalHp);
             hermiesTrigger = 0.33f;
             hermiesLevel = 1;
+            opalLevel = 1;
             opalFly = false;
             followerNum = 1;
             betaVamSub = false;
-            if (currentSkinType == Zeta.SkinType)
+            if (currentSkinType == Zeta.SkinType ||  currentSkinType == nameof(SkinType.DEFAULT))
             {
                 __instance._spriteAnimation.AddAnimation("black", SpriteManager.GetAnimationFrames("zeta_black_", 1, 4, new Vector2(0.5f, 0f), "character_community_zeta_black", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
                 __instance._spriteAnimation.AddAnimation("moon", SpriteManager.GetAnimationFrames("zeta_moon_", 1, 4, new Vector2(0.5f, 0f), "character_community_zeta_moon", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
@@ -201,6 +225,102 @@ namespace CommunityCharacter
                 __instance._spriteAnimation.AddAnimation("seawinds", SpriteManager.GetAnimationFrames("zeta_seawinds_", 1, 4, new Vector2(0.5f, 0f), "character_community_zeta_seawinds", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
                 __instance._spriteAnimation.AddAnimation("directer", SpriteManager.GetAnimationFrames("zeta_directer_", 1, 4, new Vector2(0.5f, 0f), "character_community_zeta_directer", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
                 __instance._spriteAnimation.SetAnimation("black");
+            }
+            
+            if(__instance.CurrentCharacterData.currentSkin == SkinType.DEFAULT)
+            {
+                changingSkin = true;
+                __instance._spriteAnimation.AddAnimation("hermies", SpriteManager.GetAnimationFrames("hermies_", 1, 4, new Vector2(0.5f, 0f), "character_community_hermies", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
+                __instance._spriteAnimation.AddAnimation("opal", SpriteManager.GetAnimationFrames("opal_", 1, 4, new Vector2(0.5f, 0f), "character_community_opal", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
+                __instance._spriteAnimation.AddAnimation("festa", SpriteManager.GetAnimationFrames("festa_", 1, 4, new Vector2(0.5f, 0f), "character_community_festa", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
+                __instance._spriteAnimation.AddAnimation("beta", SpriteManager.GetAnimationFrames("beta_", 1, 4, new Vector2(0.5f, 0f), "character_community_beta", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
+                __instance._spriteAnimation.AddAnimation("tempo", SpriteManager.GetAnimationFrames("tempo_", 1, 4, new Vector2(0.5f, 0f), "character_community_tempo", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
+                __instance._spriteAnimation.AddAnimation("vam", SpriteManager.GetAnimationFrames("vam_", 1, 4, new Vector2(0.5f, 0f), "character_community_vam", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
+                __instance._spriteAnimation.AddAnimation("decapo", SpriteManager.GetAnimationFrames("decapo_", 1, 4, new Vector2(0.5f, 0f), "character_community_decapo", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
+
+                GameObject gameObject = new GameObject();
+                gameObject.name = "ChargeBar";
+                gameObject.transform.SetParent(characterControllerCommunity.gameObject.transform.FindChild("CharacterRenderer/Canvas - HealthBar").transform);
+                GameObject gameObject2 = new GameObject();
+                gameObject2.name = "ChargeBarFill";
+                gameObject2.transform.SetParent(gameObject.transform);
+                gameObject.transform.localPosition = new Vector3(0f, -24f, 0f);
+                gameObject.AddComponent<Image>();
+                gameObject2.AddComponent<Image>();
+                RectTransform rectTransform = gameObject.GetComponent<RectTransform>();
+                RectTransform rectTransform2 = gameObject2.GetComponent<RectTransform>();
+                rectTransform.anchorMax = new Vector2(1, 1);
+                rectTransform.anchorMin = new Vector2(0, 0);
+                rectTransform.sizeDelta = new Vector2(0, 0);
+                rectTransform2.anchorMax = new Vector2(1, 1);
+                rectTransform2.anchorMin = new Vector2(0, 0);
+                rectTransform2.sizeDelta = new Vector2(0, 0);
+                healthBar = gameObject.GetComponent<Image>();
+                healthBar.transform.localScale = new Vector3(1f, 1f, 1f);
+                healthBar.color = new Color32(0, 0, 0, 255);
+                healthBarFill = gameObject2.GetComponent<Image>();
+                healthBarFill.fillMethod = Image.FillMethod.Horizontal;
+                healthBarFill.type = Image.Type.Filled;
+                healthBarFill.color = new Color32(170, 95, 0, 255);
+                healthBar.sprite = healthBarFill.sprite = SpriteManager.GetUnpackedSprite("UISquare");
+                characterControllerCommunity.gameObject.transform.FindChild("WickedSeason").transform.localPosition = new Vector3(0f, -0.129f, 0f);
+                
+                chargeTime = 0f;
+                isCharging = false;
+                outerSprite =
+                    __instance.AddPhaserSprite(Vector2.zero, "character_community_outerRing", "cc_outerRing_01");
+                innerSprite =
+                    __instance.AddPhaserSprite(Vector2.zero, "character_community_innerRing", "cc_innerRing_01");
+                outerSprite.setDepth(-1);
+                innerSprite.setDepth(-1);
+                outerSprite.setAlpha(0);
+                innerSprite.setAlpha(0);
+                outerSprite.transform.localPosition = new Vector3(0f, 0.16f, 0f);
+                innerSprite.transform.localPosition = new Vector3(0f, 0.16f, 0f);
+                MultiTargetTween _outerTween = outerTween;
+                MultiTargetTween _innerTween = innerTween;
+                MultiTargetTween _scaleTween = scaleTween;
+                if (_outerTween != null) _outerTween.Stop();
+                if (_innerTween != null) _innerTween.Stop();
+                if (_scaleTween != null) _scaleTween.Stop();
+                outerTween = Tweens.Add(new TweenConfig
+                {
+                    targets = new[]
+                    {
+                        outerSprite
+                    },
+                    angle = new Il2CppSystem.Nullable<float>(360),
+                    duration = 2000f,
+                    repeat = -1
+                });
+                innerTween = Tweens.Add(new TweenConfig
+                {
+                    targets = new[]
+                    {
+                        innerSprite
+                    },
+                    angle = new Il2CppSystem.Nullable<float>(-360),
+                    duration = 2300f,
+                    repeat = -1
+                });
+                scaleTween = Tweens.Add(new TweenConfig
+                {
+                    targets = new[]
+                    {
+                        outerSprite,
+                        innerSprite
+                    },
+                    angle = new Il2CppSystem.Nullable<float>(360),
+                    duration = 2000f,
+                    repeat = -1,
+                    yoyo = true,
+                    ease = Ease.InOutSine,
+                    staggerDelay = Tweens.Stagger(150f, new StaggerConfig
+                    {
+                        start = 0f
+                    })
+                });
+                CycleSkin();
             }
         }
         [HarmonyPatch(nameof(CharacterController.OnUpdate))]
@@ -222,15 +342,48 @@ namespace CommunityCharacter
                 opalFly = true;
                 characterControllerCommunity._gameManager._physicsManager._playersWithWallCollisionGroup.remove(characterControllerCommunity.GetComponent<ArcadeSprite>());
             }
-            // Beta and Vam
-            if (currentSkinType == Beta.SkinType || currentSkinType == VamAndPyre.SkinType)
+            // Tempo
+            if (currentSkinType == TempoDiMelma.SkinType) TempoEffects();
+            // Vam
+            if (currentSkinType == VamAndPyre.SkinType)
             {
-                if (betaVamSub) return;
-                betaVamSub = true;
-                characterControllerCommunity._signalBus.Subscribe<GameplaySignals.EnemyKilledImmediateSignal>(new Action(MakeEnemyFollower));
+                if (!betaVamSub)
+                {
+                    betaVamSub = true;
+                    characterControllerCommunity._signalBus.Subscribe<GameplaySignals.EnemyKilledImmediateSignal>(
+                        new Action(MakeEnemyFollower));
+                }
             }
             else if (betaVamSub)
-                characterControllerCommunity._signalBus.Unsubscribe<GameplaySignals.EnemyKilledImmediateSignal>(new Action(MakeEnemyFollower));
+            {
+                characterControllerCommunity._signalBus.TryUnsubscribe<GameplaySignals.EnemyKilledImmediateSignal>(
+                    new Action(MakeEnemyFollower));
+                betaVamSub = false;
+            }
+
+            if (!changingSkin) return;
+            if (__instance.Walked != 0f)
+            {
+                outerSprite.setAlpha(0f);
+                innerSprite.setAlpha(0f);
+                healthBarFill.fillAmount = 0f;
+                HideCharge();
+                chargeTime = 0f;
+                return;
+            }
+            ShowCharge();
+            chargeTime += PauseSystem.DeltaTimeMillis;
+            float fill = chargeTime / maxChargeTime;
+            float alpha = 0.25f + 0.75f * fill;
+            outerSprite.setAlpha(alpha);
+            innerSprite.setAlpha(alpha);
+            healthBarFill.fillAmount = fill;
+            if(chargeTime < maxChargeTime) return;
+            outerSprite.setAlpha(0f);
+            innerSprite.setAlpha(0f);
+            HideCharge();
+            chargeTime = 0f;
+            CycleSkin();
         }
 
         [HarmonyPatch(nameof(CharacterController.HandleLateUpdate))]
@@ -245,6 +398,8 @@ namespace CommunityCharacter
                 lhs.x += 0.25f * (float)(__instance.flipX ? -1 : 1);
                 foreach (PhaserGameObject phaserGameObject in children)
                 {
+                    int random = UnityEngine.Random.Range(0, 7);
+                    if (children.InternalIndexOf(phaserGameObject) % 17 != random) continue;
                     if (phaserGameObject.body != null && phaserGameObject.body._enable)
                     {
                         EnemyType enemyType = phaserGameObject.Cast<EnemyController>().EnemyType;
@@ -252,9 +407,9 @@ namespace CommunityCharacter
                         {
                             float2 @float = lhs - phaserGameObject.transform.position.ToFloat2();
                             float num = math.dot(@float, @float);
-                            if (num > 0.1f)
+                            if (num > 0.2f)
                             {
-                                float2 rhs = @float / num * PauseSystem.DeltaTime * 4f * 1 * __instance.PArea();
+                                float2 rhs = @float / num * PauseSystem.DeltaTime * 5f * 1 * __instance.PArea();
                                 phaserGameObject.Cast<EnemyController>().position += rhs;
                             }
                         }
@@ -304,7 +459,18 @@ namespace CommunityCharacter
             if (currentSkinType == Zeta.SkinType)
                 characterControllerCommunity.AddTemporaryBonus(new Action(ZetaCritGive), new Action(ZetaCritRemove), 5000f);
         }
-
+        internal static void HideCharge()
+        {
+            healthBarFill.SetAlpha(0.35f);
+            healthBar.SetAlpha(0.35f);
+            isCharging = false;
+        }
+        internal static void ShowCharge()
+        {
+            healthBarFill.SetAlpha(1f);
+            healthBar.SetAlpha(1f);
+            if(!isCharging) isCharging = true;
+        }
 
         /// <summary>
         /// Zeta Methods
@@ -429,12 +595,19 @@ namespace CommunityCharacter
         static Action HermiesMovespeedTake = () =>
         {
             hermiesMove.Cancel();
+            hermiesTrigger = 0f;
             characterControllerCommunity._playerStats.MoveSpeed = moveSpeed;
             hermiesMove = null;
         };
 
+        /// <summary>
+        /// Opal Methods
+        /// </summary>
+        
         internal static void OpalEffect()
         {
+            opalLevel++;
+            if (opalLevel % 4 == 0) characterControllerCommunity._playerStats.Charm++;
             Vector3 position = characterControllerCommunity.transform.position;
             int num = (int)characterControllerCommunity.PAmount();
             if (num == 0) return;
@@ -451,6 +624,10 @@ namespace CommunityCharacter
             }
         }
 
+        /// <summary>
+        /// Tempo Methods
+        /// </summary>
+        
         internal static void TempoEffects()
         {
             int kills = characterControllerCommunity._playerOptions.Config.RunEnemies;
@@ -512,6 +689,10 @@ namespace CommunityCharacter
 
         }
 
+        /// <summary>
+        /// Beta and Vamp Methods
+        /// </summary>
+        
         internal static void MakeEnemyFollower()
         {
             if (characterControllerCommunity._gameManager.GetLatestKilledEnemyThatCanBeFollower() == null) return;
@@ -523,6 +704,100 @@ namespace CommunityCharacter
             enemyData.charName = $"{enemyData.charName} {followerNum}";
             enemyFollower.HasSetName = true;
             followerNum++;
+        }
+        
+        internal static void ZetaSkinGetter()
+        {
+            switch (zetaTriggerEffect)
+            {
+                case 1:
+                    characterControllerCommunity.Anims.SetAnimation("moon");
+                    break;
+                case 2:
+                    characterControllerCommunity.Anims.SetAnimation("city");
+                    break;
+                case 3:
+                    characterControllerCommunity.Anims.SetAnimation("stone");
+                    break;
+                case 4:
+                    characterControllerCommunity.Anims.SetAnimation("sun");
+                    break;
+                case 5:
+                    characterControllerCommunity.Anims.SetAnimation("volcano");
+                    break;
+                case 6:
+                    characterControllerCommunity.Anims.SetAnimation("seawinds");
+                    break;
+                case 7:
+                    characterControllerCommunity.Anims.SetAnimation("directer");
+                    break;
+                default:
+                    characterControllerCommunity.Anims.SetAnimation("black");
+                    break;
+            }
+        }
+        
+        internal static void CycleSkin()
+        {
+            if (currentSkinType == nameof(SkinType.DEFAULT))
+            {
+                Zeta.ZetaStatApply(characterControllerCommunity);
+                currentSkinType = Zeta.SkinType;
+                return;
+            }
+            
+            switch (currentSkinType)
+            {
+                case Zeta.SkinType:
+                    Zeta.ZetaStatApply(characterControllerCommunity, false);
+                    characterControllerCommunity.Anims.SetAnimation("hermies");
+                    currentSkinType = Hermies.SkinType;
+                    Hermies.HermiesStatApply(characterControllerCommunity);
+                    break;
+                case Hermies.SkinType:
+                    Hermies.HermiesStatApply(characterControllerCommunity, false);
+                    characterControllerCommunity.Anims.SetAnimation("opal");
+                    currentSkinType = Opal.SkinType;
+                    Opal.OpalStatApply(characterControllerCommunity);
+                    break;
+                case Opal.SkinType:
+                    Opal.OpalStatApply(characterControllerCommunity, false);
+                    characterControllerCommunity.Anims.SetAnimation("festa");
+                    currentSkinType = Festa.SkinType;
+                    Festa.FestaStatApply(characterControllerCommunity);
+                    break;
+                case Festa.SkinType:
+                    Festa.FestaStatApply(characterControllerCommunity, false);
+                    characterControllerCommunity.Anims.SetAnimation("beta");
+                    currentSkinType = Beta.SkinType;
+                    Beta.BetaStatApply(characterControllerCommunity);
+                    break;
+                case Beta.SkinType:
+                    Beta.BetaStatApply(characterControllerCommunity, false);
+                    characterControllerCommunity.Anims.SetAnimation("tempo");
+                    currentSkinType = TempoDiMelma.SkinType;
+                    TempoDiMelma.TempoStatApply(characterControllerCommunity);
+                    break;
+                case TempoDiMelma.SkinType:
+                    TempoDiMelma.TempoStatApply(characterControllerCommunity, false);
+                    characterControllerCommunity.Anims.SetAnimation("vam");
+                    currentSkinType = VamAndPyre.SkinType;
+                    VamAndPyre.VamStatApply(characterControllerCommunity);
+                    break;
+                case VamAndPyre.SkinType:
+                    VamAndPyre.VamStatApply(characterControllerCommunity, false);
+                    characterControllerCommunity.Anims.SetAnimation("decapo");
+                    currentSkinType = DeCapo.SkinType;
+                    DeCapo.DeCapoStatApply(characterControllerCommunity);
+                    break;
+                case DeCapo.SkinType:
+                    DeCapo.DeCapoStatApply(characterControllerCommunity, false);
+                    ZetaSkinGetter();
+                    currentSkinType = Zeta.SkinType;
+                    Zeta.ZetaStatApply(characterControllerCommunity);
+                    break;
+            }
+
         }
     }
 }

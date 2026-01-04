@@ -8,6 +8,7 @@ using Il2CppVampireSurvivors.Graphics;
 using Il2CppVampireSurvivors.Objects.Characters;
 using MelonLoader;
 using Newtonsoft.Json;
+using SaveDataInvestigator;
 using UnityEngine;
 
 namespace CommunityCharacter
@@ -46,6 +47,8 @@ namespace CommunityCharacter
             SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_stone.png"), "zeta_stone", 4);
             SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_sun.png"), "zeta_sun", 4);
             SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_volcano.png"), "zeta_volcano", 4);
+            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_outerRing.png"), "cc_outerRing", 1);
+            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_innerRing.png"), "cc_innerRing", 1);
         }
 
         internal static readonly JsonSerializerSettings SerializerSettings = new()
@@ -57,6 +60,7 @@ namespace CommunityCharacter
         static void CharacterRegister(DataManager __instance)
         {
             CharacterType characterType = (CharacterType)20000;
+            ModOptionsData.SetCharacterId(characterType, "DACommunityCharacter");
 
             __instance._allCharactersJson.Add(characterType.ToString(), BaseStats.Defaults());
         }

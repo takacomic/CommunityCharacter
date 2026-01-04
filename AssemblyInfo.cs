@@ -36,4 +36,4 @@ using MelonLoader;
 // Melon related Assembly
 [assembly: MelonInfo(typeof(CommunityCharacterMod), ModInfo.Name, ModInfo.Version, ModInfo.Author, ModInfo.Download)]
 [assembly: MelonGame("poncle", "Vampire Survivors")]
-[assembly: MelonAdditionalDependencies()]
+[assembly: MelonAdditionalDependencies("SaveDataInvestigator")]

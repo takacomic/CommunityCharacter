@@ -1,5 +1,9 @@
 ﻿
 using Il2CppNewtonsoft.Json.Linq;
+using Il2CppVampireSurvivors.Data;
+using Il2CppVampireSurvivors.Framework;
+using Il2CppVampireSurvivors.Objects;
+using Il2CppVampireSurvivors.Objects.Characters;
 
 
 namespace CommunityCharacter
@@ -43,10 +47,14 @@ namespace CommunityCharacter
         public static JArray Defaults()
         {
             JObject jObject = new JObject();
+            JObject level20 = new JObject();
+            JObject level21 = new JObject();
+            JObject level40 = new JObject();
+            JObject level41 = new JObject();
             JArray exitArray = new JArray();
             JArray skins = new JArray();
             JObject skin = SkinData("DEFAULT", "Default", "character_community", "community_01.png");
-            //skins.Add(skin);
+            skins.Add(skin);
             skins.Add(Zeta.SkinData());
             skins.Add(Hermies.SkinData());
             skins.Add(Opal.SkinData());
@@ -87,7 +95,15 @@ namespace CommunityCharacter
             jObject["skips"] = Skip;
             jObject["banish"] = Banish;
             jObject["skins"] = skins;
+            level20["growth"] = 1;
+            level21["growth"] = -1;
+            level40["growth"] = 1;
+            level41["growth"] = -1;
             exitArray.Add(jObject);
+            exitArray.Add(level20);
+            exitArray.Add(level21);
+            exitArray.Add(level40);
+            exitArray.Add(level41);
             return exitArray;
         }
     }
@@ -104,6 +120,34 @@ namespace CommunityCharacter
         static float Movespeed = 0.3f;
         static float Area = 0.3f;
 
+        internal static void ZetaStatApply(CharacterController character, bool add = true)
+        {
+            PlayerModifierStats stats = character.PlayerStats;
+            ModifierStats onEveryLevelUp = new();
+            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
+            if (add)
+            {
+                stats.MaxHp.Val += Hp;
+                stats.MoveSpeed.Val += Movespeed;
+                stats.Area.Val += Area;
+                onEveryLevelUp.Power = 0.01f;
+                onEveryLevelUp.Speed = 0.01f;
+                onEveryLevelUp.Duration = 0.01f;
+                onEveryLevelUp.Area = 0.01f;
+                weapons.AddHiddenWeapon(WeaponType.SILF_COUNTER, character);
+                weapons.AddHiddenWeapon(WeaponType.SILF2_COUNTER, character);
+            }
+            else
+            {
+                stats.MaxHp.Val -= Hp;
+                stats.MoveSpeed.Val -= Movespeed;
+                stats.Area.Val -= Area;
+                weapons.RemoveHiddenWeapon(WeaponType.SILF_COUNTER, character);
+                weapons.RemoveHiddenWeapon(WeaponType.SILF2_COUNTER, character);
+            }
+            character._playerStats =  stats;
+            character._onEveryLevelUp =  onEveryLevelUp;
+        }
         static JObject OnEveryLevelUp()
         {
             JObject jObject = new JObject();
@@ -140,7 +184,36 @@ namespace CommunityCharacter
         static float Movespeed = 2f;
         static float Speed = 0.5f;
         static float Regen = 1f;
-        static float Defang = 10f;
+        static float Defang = 0.1f;
+        
+        internal static void HermiesStatApply(CharacterController character, bool add = true)
+        {
+            PlayerModifierStats stats = character.PlayerStats;
+            ModifierStats onEveryLevelUp = new();
+            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
+            onEveryLevelUp = new();
+            if (add)
+            {
+                stats.Speed.Val += Speed;
+                stats.MoveSpeed.Val += Movespeed;
+                stats.Regen.Val += Regen;
+                stats.Defang += Defang;
+                onEveryLevelUp.Regen = 0.05f;
+                weapons.AddHiddenWeapon(WeaponType.LAUREL, character);
+                weapons.AddHiddenWeapon(WeaponType.TRAPANO2, character);
+            }
+            else
+            {
+                stats.Speed.Val -= Speed;
+                stats.MoveSpeed.Val -= Movespeed;
+                stats.Regen.Val -= Regen;
+                stats.Defang -= Defang;
+                weapons.RemoveHiddenWeapon(WeaponType.LAUREL, character);
+                weapons.RemoveHiddenWeapon(WeaponType.TRAPANO2, character);
+            }
+            character._playerStats = stats;
+            character._onEveryLevelUp = onEveryLevelUp;
+        }
         static JObject OnEveryLevelUp()
         {
             JObject jObject = new JObject();
@@ -175,13 +248,28 @@ namespace CommunityCharacter
         static float Movespeed = 0.5f;
         static float Regen = 5f;
         static float Cooldown = -0.1f;
-        static JObject OnEveryLevelUp()
+        
+        internal static void OpalStatApply(CharacterController character, bool add = true)
         {
-            JObject jObject = new JObject();
-
-            jObject["charm"] = 0.25f;
-
-            return jObject;
+            PlayerModifierStats stats = character.PlayerStats;
+            ModifierStats onEveryLevelUp = new();
+            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
+            if (add)
+            {
+                stats.Cooldown.Val += Cooldown;
+                stats.MoveSpeed.Val += Movespeed;
+                stats.Regen.Val += Regen;
+                weapons.AddHiddenWeapon(WeaponType.EX_GAEA2, character);
+            }
+            else
+            {
+                stats.Cooldown.Val -= Cooldown;
+                stats.MoveSpeed.Val -= Movespeed;
+                stats.Regen.Val -= Regen;
+                weapons.RemoveHiddenWeapon(WeaponType.EX_GAEA2, character);
+            }
+            character._playerStats = stats;
+            character._onEveryLevelUp = onEveryLevelUp;
         }
         public static JObject SkinData()
         {
@@ -191,7 +279,6 @@ namespace CommunityCharacter
             skin["cooldown"] = Cooldown;
             skin["description"] = "Has a hidden Embrace of Gaea. Can Fly. Gains +0.25 Charm and Summons light sources every level.";
             skin["hiddenWeapons"] = JArray.Parse(HiddenWeapons);
-            skin["onEveryLevelUp"] = OnEveryLevelUp();
 
             return skin;
         }
@@ -208,6 +295,30 @@ namespace CommunityCharacter
         static float Luck = 1.5f;
         static float Greed = 0.5f;
         static float Regen = 1f;
+        
+        internal static void FestaStatApply(CharacterController character, bool add = true)
+        {
+            PlayerModifierStats stats = character.PlayerStats;
+            ModifierStats onEveryLevelUp = new();
+            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
+            if (add)
+            {
+                stats.Luck.Val += Luck;
+                stats.Greed.Val += Greed;
+                stats.Regen.Val += Regen;
+                onEveryLevelUp.Luck = 0.01f;
+                weapons.AddHiddenWeapon(WeaponType.JUBILEE, character);
+            }
+            else
+            {
+                stats.Luck.Val -= Luck;
+                stats.Greed.Val -= Greed;
+                stats.Regen.Val -= Regen;
+                weapons.RemoveHiddenWeapon(WeaponType.JUBILEE, character);
+            }
+            character._playerStats = stats;
+            character._onEveryLevelUp = onEveryLevelUp;
+        }
         static JObject OnEveryLevelUp()
         {
             JObject jObject = new JObject();
@@ -244,6 +355,36 @@ namespace CommunityCharacter
         static float Area = 0.2f;
         static float Growth = 0.25f;
         static float Amount = 1f;
+        
+        internal static void BetaStatApply(CharacterController character, bool add = true)
+        {
+            PlayerModifierStats stats = character.PlayerStats;
+            ModifierStats onEveryLevelUp = new();
+            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
+            if (add)
+            {
+                stats.Power.Val += Power;
+                stats.Speed.Val += Speed;
+                stats.Duration.Val += Duration;
+                stats.Area.Val += Area;
+                stats.Growth.Val += Growth;
+                stats.Amount.Val += Amount;
+                onEveryLevelUp.Growth = 0.01f;
+                weapons.AddHiddenWeapon(WeaponType.VESPERS, character);
+            }
+            else
+            {
+                stats.Power.Val -= Power;
+                stats.Speed.Val -= Speed;
+                stats.Duration.Val -= Duration;
+                stats.Area.Val -= Area;
+                stats.Growth.Val -= Growth;
+                stats.Amount.Val -= Amount;
+                weapons.RemoveHiddenWeapon(WeaponType.VESPERS, character);
+            }
+            character._playerStats = stats;
+            character._onEveryLevelUp = onEveryLevelUp;
+        }
         static JObject OnEveryLevelUp()
         {
             JObject jObject = new JObject();
@@ -286,6 +427,50 @@ namespace CommunityCharacter
         static float Regen = 1f;
         static float Magnet = 0.25f;
         static float Amount = 2f;
+        private static float MagnetChange;
+        
+        internal static void TempoStatApply(CharacterController character, bool add = true)
+        {
+            PlayerModifierStats stats = character.PlayerStats;
+            ModifierStats onEveryLevelUp = new();
+            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
+            MagnetZone magnet = character._magnet;
+            if (add)
+            {
+                stats.Power.Val += Power;
+                stats.Speed.Val += Speed;
+                stats.Duration.Val += Duration;
+                stats.Area.Val += Area;
+                stats.Armor.Val += Armor;
+                stats.Amount.Val += Amount;
+                stats.Regen.Val += Regen;
+                stats.MaxHp.Val += Hp;
+                stats.Magnet.Val += Magnet;
+                magnet.Radius += MagnetChange = magnet.Radius * Magnet;
+                magnet.RefreshSize();
+                onEveryLevelUp.MaxHp = 1f;
+                onEveryLevelUp.Magnet = 0.01f;
+                weapons.AddHiddenWeapon(WeaponType.STIGRANGATTI, character);
+            }
+            else
+            {
+                stats.Power.Val -= Power;
+                stats.Speed.Val -= Speed;
+                stats.Duration.Val -= Duration;
+                stats.Area.Val -= Area;
+                stats.Armor.Val -= Armor;
+                stats.Amount.Val -= Amount;
+                stats.Regen.Val -= Regen;
+                stats.MaxHp.Val -= Hp;
+                stats.Magnet.Val -= Magnet;
+                magnet.Radius -= MagnetChange;
+                magnet.RefreshSize();
+                weapons.RemoveHiddenWeapon(WeaponType.STIGRANGATTI, character);
+            }
+            character._playerStats = stats;
+            character._onEveryLevelUp = onEveryLevelUp;
+            character._magnet = magnet;
+        }
         static JObject OnEveryLevelUp()
         {
             JObject jObject = new JObject();
@@ -333,11 +518,50 @@ namespace CommunityCharacter
         static float Luck = 0.2f;
         static float Amount = 1f;
         static float Greed = 0.99f;
+
+        internal static void VamStatApply(CharacterController character, bool add = true)
+        {
+            PlayerModifierStats stats = character.PlayerStats;
+            ModifierStats onEveryLevelUp = new();
+            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
+            if (add)
+            {
+                stats.Power.Val += Power;
+                stats.Speed.Val += Speed;
+                stats.Duration.Val += Duration;
+                stats.Area.Val += Area;
+                stats.Luck.Val += Luck;
+                stats.Amount.Val += Amount;
+                stats.Cooldown.Val += Cooldown;
+                stats.MaxHp.Val += Hp;
+                stats.MoveSpeed.Val += Movespeed;
+                stats.Greed.Val += Greed;
+                onEveryLevelUp.Power = 0.02f;
+                weapons.AddHiddenWeapon(WeaponType.MISSPELL2, character);
+            }
+            else
+            {
+                stats.Power.Val -= Power;
+                stats.Speed.Val -= Speed;
+                stats.Duration.Val -= Duration;
+                stats.Area.Val -= Area;
+                stats.Luck.Val -= Luck;
+                stats.Amount.Val -= Amount;
+                stats.Cooldown.Val -= Cooldown;
+                stats.MaxHp.Val -= Hp;
+                stats.MoveSpeed.Val -= Movespeed;
+                stats.Greed.Val -= Greed;
+                weapons.RemoveHiddenWeapon(WeaponType.MISSPELL2, character);
+            }
+            character._playerStats = stats;
+            character._onEveryLevelUp = onEveryLevelUp;
+        }
+
         static JObject OnEveryLevelUp()
         {
             JObject jObject = new JObject();
 
-            jObject["might"] = 0.02f;
+            jObject["power"] = 0.02f;
 
             return jObject;
         }
@@ -374,7 +598,42 @@ namespace CommunityCharacter
         static float Movespeed = -0.2f;
         static float Growth = 0.25f;
         static float Magnet = 1f;
-        static float Charm = 50f;
+        static int Charm = 30;
+        private static float MagnetChange;
+        
+        internal static void DeCapoStatApply(CharacterController character, bool add = true)
+        {
+            PlayerModifierStats stats = character.PlayerStats;
+            ModifierStats onEveryLevelUp = new();
+            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
+            MagnetZone magnet = character._magnet;
+            if (add)
+            {
+                stats.Armor.Val += Armor;
+                stats.Growth.Val += Growth;
+                stats.Charm += Charm;
+                stats.MoveSpeed.Val += Movespeed;
+                stats.Magnet.Val += Magnet;
+                magnet.Radius += MagnetChange = magnet.Radius * Magnet;
+                magnet.RefreshSize();
+                onEveryLevelUp.Curse = 0.01f;
+                weapons.AddHiddenWeapon(WeaponType.SIRE, character);
+            }
+            else
+            {
+                stats.Armor.Val -= Armor;
+                stats.Growth.Val -= Growth;
+                stats.Charm -= Charm;
+                stats.MoveSpeed.Val -= Movespeed;
+                stats.Magnet.Val -= Magnet;
+                magnet.Radius -= MagnetChange;
+                magnet.RefreshSize();
+                weapons.RemoveHiddenWeapon(WeaponType.SIRE, character);
+            }
+            character._playerStats = stats;
+            character._onEveryLevelUp = onEveryLevelUp;
+            character._magnet = magnet;
+        }
         static JObject OnEveryLevelUp()
         {
             JObject jObject = new JObject();

@@ -56,12 +56,19 @@
     <None Remove="Assets\character_community_zeta_volcano.png" />
     <EmbeddedResource Include="Assets\character_community_zeta_volcano.png" />
     <None Remove="Assets\character_community_zeta_new.png" />
+    <None Remove="Assets\character_community_innerRing.png" />
+    <EmbeddedResource Include="Assets\character_community_innerRing.png" />
+    <None Remove="Assets\character_community_outerRing.png" />
+    <EmbeddedResource Include="Assets\character_community_outerRing.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>$(VSPath)\MelonLoader\net6\0Harmony.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Il2CppDOTween">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\MelonLoader\Il2CppAssemblies\Il2CppDOTween.dll</HintPath>
     </Reference>
     <Reference Include="Il2CppInterop.Runtime">
       <HintPath>$(VSPath)\MelonLoader\net6\Il2CppInterop.Runtime.dll</HintPath>
@@ -83,6 +90,9 @@
       <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Il2CppPhaserPort.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Il2CppSystem">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\MelonLoader\Il2CppAssemblies\Il2CppSystem.dll</HintPath>
+    </Reference>
     <Reference Include="Il2CppSystem.Core">
       <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Il2CppSystem.Core.dll</HintPath>
       <Private>False</Private>
@@ -101,6 +111,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(VSPath)\MelonLoader\net6\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="SaveDataInvestigator">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\Mods\SaveDataInvestigator.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Collections">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\MelonLoader\Il2CppAssemblies\Unity.Collections.dll</HintPath>

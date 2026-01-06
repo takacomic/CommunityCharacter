@@ -1,10 +1,12 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
 using Il2CppDG.Tweening;
+using Il2CppInterop.Runtime.Runtime;
 using Il2CppVampireSurvivors.App.Tools;
 using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Data.Characters;
 using Il2CppVampireSurvivors.Data.Stage;
+using Il2CppVampireSurvivors.Data.Weapons;
 using Il2CppVampireSurvivors.Framework;
 using Il2CppVampireSurvivors.Framework.NumberTypes;
 using Il2CppVampireSurvivors.Framework.Phaser;
@@ -18,6 +20,8 @@ using Il2CppVampireSurvivors.Signals;
 using Il2CppVampireSurvivors.Tools;
 using Il2CppVampireSurvivors.Graphics;
 using MelonLoader;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
@@ -66,6 +70,21 @@ namespace CommunityCharacter
                 canBeRetal = true;
             };
             retalTimer = TimerHelper.RegisterMillis(250f, action);
+        }
+    }
+
+    [HarmonyPatch(typeof(LevelUpFactory))]
+    static class LevelUpFactoryPatch
+    {
+        [HarmonyPatch(nameof(LevelUpFactory.GetWeaponFromWeightedStore))]
+        public static void GetWeaponFromWeightedStore(List<WeightedWeapon> store, double value)
+        {
+            foreach (var VARIABLE in store)
+            {
+                MelonLogger.Msg(VARIABLE.Weapon.ToString());
+            }
+            
+            MelonLogger.Msg("Weight: " + value);
         }
     }
     
@@ -147,6 +166,7 @@ namespace CommunityCharacter
         {
             if (__instance.PlayerOne != CharacterControllerCommunity.characterControllerCommunity) return;
             if (__instance.PlayerOne.CurrentCharacterData.currentSkin.ToString() != Beta.SkinType) return;
+            if (treasure.hasRandoms) return;
             if (treasure.prizeTypes.IndexOf(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION)) > -1)
             {
                 treasure.prizeTypes.Clear();
@@ -205,9 +225,6 @@ namespace CommunityCharacter
         public static void AfterFullInitialization_Postfix(CharacterController __instance)
         {
             if (__instance._characterType != (CharacterType)20000) return;
-
-            foreach( WeaponType w in LevelUpFactory._excludedWeapons)
-                MelonLogger.Msg(w.ToString());
             characterControllerCommunity = __instance;
             changingSkin = false;
             currentSkinType = __instance.CurrentCharacterData.currentSkin.ToString();

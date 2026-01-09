@@ -9,17 +9,20 @@ using UnityEngine;
 
 namespace CommunityCharacter
 {
-    /*[HarmonyPatch(typeof(CharacterFactory))]
+    [HarmonyPatch(typeof(CharacterFactory))]
     class CharacterFactoryPatch
     {
         [HarmonyPatch(nameof(CharacterFactory.GetCharacterPrefab))]
         [HarmonyPostfix]
         static void PostFix(CharacterType characterType, ref CharacterController __result)
         {
-            CharacterController character;
-            CharacterControllerCommunity characterCommunity = __result as CharacterControllerCommunity;
+            
+            __result.gameObject.GetComponent<CharacterController>().enabled = false;
+            __result.gameObject.AddComponent<CharacterControllerCommunity>();
+            UnityEngine.Object.Destroy(__result.gameObject.GetComponent<CharacterController>());
+            MelonLogger.Msg(__result.GetComponent<CharacterController>().name);
             Melon<CommunityCharacterMod>.Logger.Msg(__result);
-            __result = characterCommunity;
+            //__result = __result.gameObject.GetComponent<CharacterControllerCommunity>();
         }
-    }*/
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppInterop.Runtime;
+using Il2CppInterop.Runtime.Injection;
 using Il2CppSystem;
 using Il2CppVampireSurvivors.Data;
 using Il2CppVampireSurvivors.Framework;
@@ -21,5 +22,10 @@ namespace CommunityCharacter
     }
     public class CommunityCharacterMod : MelonMod
     {
+        /*public override void OnSceneWasLoaded(int buildIndex, string sceneName)
+        {
+            /*ClassInjector.RegisterTypeInIl2Cpp<TestController>();
+            base.OnSceneWasLoaded(buildIndex, sceneName);
+        }*/
     }
 }

@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Il2Cpp;
 using Il2CppDG.Tweening;
+using Il2CppInterop.Runtime.Injection;
 using Il2CppInterop.Runtime.Runtime;
 using Il2CppVampireSurvivors.App.Tools;
 using Il2CppVampireSurvivors.Data;
@@ -8,6 +9,7 @@ using Il2CppVampireSurvivors.Data.Characters;
 using Il2CppVampireSurvivors.Data.Stage;
 using Il2CppVampireSurvivors.Data.Weapons;
 using Il2CppVampireSurvivors.Framework;
+using Il2CppVampireSurvivors.Framework.Loading;
 using Il2CppVampireSurvivors.Framework.NumberTypes;
 using Il2CppVampireSurvivors.Framework.Phaser;
 using Il2CppVampireSurvivors.Framework.PhaserTweens;
@@ -19,6 +21,7 @@ using Il2CppVampireSurvivors.Objects.Pickups;
 using Il2CppVampireSurvivors.Signals;
 using Il2CppVampireSurvivors.Tools;
 using Il2CppVampireSurvivors.Graphics;
+using Il2CppZenject;
 using MelonLoader;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -70,6 +73,7 @@ namespace CommunityCharacter
                 canBeRetal = true;
             };
             retalTimer = TimerHelper.RegisterMillis(250f, action);
+            
         }
     }
 
@@ -95,8 +99,9 @@ namespace CommunityCharacter
         [HarmonyPrefix]
         public static bool DebugSpawnDestructibles_Prefix()
         {
-            if(CharacterControllerCommunity.characterControllerCommunity._characterType == (CharacterType)20000)
-                if(CharacterControllerCommunity.currentSkinType == Festa.SkinType) return false;
+            if (!GameObject.FindWithTag("Player").TryGetComponent<CharacterControllerCommunity>( out var character)) return true;
+            if(character._characterType == (CharacterType)20000)
+                if(character.currentSkinType == Festa.SkinType) return false;
 
             return true;
         }
@@ -109,9 +114,9 @@ namespace CommunityCharacter
         [HarmonyPostfix]
         public static void GetTaken_Postfix(TreasureChest __instance)
         {
-            if (__instance._targetPlayer != CharacterControllerCommunity.characterControllerCommunity) return;
+            if (!GameObject.FindWithTag("Player").TryGetComponent<CharacterControllerCommunity>( out var character)) return;
+            if (__instance._targetPlayer != character) return;
             if (__instance.TargetPlayer.CurrentCharacterData.currentSkin.ToString() != TempoDiMelma.SkinType) return;
-            CharacterController character = CharacterControllerCommunity.characterControllerCommunity;
             character.PlayerStats.Power += 0.01f;
             character.PlayerStats.Speed += 0.01f;
             character.PlayerStats.Duration += 0.01f;
@@ -127,8 +132,8 @@ namespace CommunityCharacter
         [HarmonyPrefix]
         public static bool OnDestroy_Prefix(Destructible __instance)
         {
-            if (CharacterControllerCommunity.characterControllerCommunity == null) return true;
-            if (CharacterControllerCommunity.currentSkinType != Festa.SkinType) return true;
+            if (!GameObject.FindWithTag("Player").TryGetComponent<CharacterControllerCommunity>( out var character)) return true;
+            if (character.currentSkinType != Festa.SkinType) return true;
             if (!__instance.CanEmitLight()) return true;
             if (UnityEngine.Random.Range(0, 31) < 29f) return true;
 
@@ -164,7 +169,8 @@ namespace CommunityCharacter
         [HarmonyPostfix]
         public static void MakeTreasure_Postfix(GameManager __instance, Vector2 pos, Treasure treasure, ref TreasureChest __result)
         {
-            if (__instance.PlayerOne != CharacterControllerCommunity.characterControllerCommunity) return;
+            if (!GameObject.FindWithTag("Player").TryGetComponent<CharacterControllerCommunity>( out var character)) return;
+            if (__instance.PlayerOne != character) return;
             if (__instance.PlayerOne.CurrentCharacterData.currentSkin.ToString() != Beta.SkinType) return;
             if (treasure.hasRandoms) return;
             if (treasure.prizeTypes.IndexOf(new Il2CppSystem.Nullable<PrizeType>(PrizeType.EVOLUTION)) > -1)
@@ -191,12 +197,24 @@ namespace CommunityCharacter
                 __result.SetArcana(true);
             }
         }
+        /*[HarmonyPatch(nameof(GameManager.Construct))]
+        [HarmonyPostfix]
+        public static void Construct_Postfix(GameManager __instance)
+        {
+            MelonLogger.Msg( __instance._characterFactory._CharacterRefs._count);
+            MelonLogger.Msg( __instance._characterFactory._characters._count);
+            MelonLogger.Msg( __instance._characterFactory._LinkedFactories.Count);
+            GameObject gameObject = AddressableLoader.LoadAsset<GameObject>()
+            __instance._characterFactory._characters.Add((CharacterType)20000, CharacterControllerCommunity);
+            //MelonLogger.Msg( __instance._characterFactory.);
+           
+        }*/
     }
 
     [HarmonyPatch(typeof(CharacterController))]
-    static class CharacterControllerCommunity
+    static class CharacterControllerCommunity1
     {
-        internal static CharacterController characterControllerCommunity;
+        /*internal static CharacterController characterControllerCommunity;
         internal static string currentSkinType;
         static int killsToTrigger;
         static int zetaTriggerEffect;
@@ -239,6 +257,12 @@ namespace CommunityCharacter
             opalFly = false;
             followerNum = 1;
             betaVamSub = false;
+            GameObject go = new GameObject();
+            Type type = typeof(HitVfxType);
+            MelonLogger.Msg(type.ToString() + " : " + type.BaseType.ToString());
+                
+            //ClassInjector.RegisterTypeInIl2Cpp<TestController>();
+            //CharacterController c = go.AddComponent<TestController>();
             if (currentSkinType == Zeta.SkinType ||  currentSkinType == nameof(SkinType.DEFAULT))
             {
                 __instance._spriteAnimation.AddAnimation("black", SpriteManager.GetAnimationFrames("zeta_black_", 1, 4, new Vector2(0.5f, 0f), "character_community_zeta_black", 2, characterControllerCommunity.RespectAnimationXPivots), 8, true);
@@ -441,6 +465,29 @@ namespace CommunityCharacter
                     }
                 }
             }
+        }*/
+
+        /*[HarmonyPatch(nameof(CharacterController.Despawn))]
+        [HarmonyPostfix]
+        public static void Despawn_Postfix()
+        {
+            if (characterControllerCommunity == null) return;
+            if (characterControllerCommunity.CharacterType != (CharacterType)20000) return;
+            characterControllerCommunity._signalBus.TryUnsubscribe<GameplaySignals.EnemyKilledImmediateSignal>(new Action(MakeEnemyFollower));
+        }*/
+        
+        [HarmonyPatch(nameof(CharacterController.Construct))]
+        [HarmonyPostfix]
+        public static void Construct(CharacterController __instance, SignalBus signalBus, DataManager dataManager, PlayerOptions playerOptions, GameManager gameManager)
+        {
+            if(__instance.CharacterType == (CharacterType)20000)
+            {
+                CharacterController controller = __instance.gameObject.GetComponent<CharacterController>();
+                CharacterControllerCommunity cc = __instance.gameObject.AddComponent<CharacterControllerCommunity>();
+                controller.enabled = false;
+                cc.Construct(signalBus, dataManager, playerOptions, gameManager);
+                MelonLogger.Msg("Constructing character" + __instance.CharacterType);
+            }
         }
 
         /*[HarmonyPatch(nameof(CharacterController.Despawn))]
@@ -452,7 +499,7 @@ namespace CommunityCharacter
             characterControllerCommunity._signalBus.TryUnsubscribe<GameplaySignals.EnemyKilledImmediateSignal>(new Action(MakeEnemyFollower));
         }*/
 
-        [HarmonyPatch(nameof(CharacterController.OnStop))]
+        /*[HarmonyPatch(nameof(CharacterController.OnStop))]
         [HarmonyPostfix]
         public static void OnStop_Postfix(CharacterController __instance)
         {
@@ -849,6 +896,6 @@ namespace CommunityCharacter
                     break;
             }
 
-        }
+        }*/
     }
 }

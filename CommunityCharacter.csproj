@@ -60,6 +60,7 @@
     <EmbeddedResource Include="Assets\character_community_innerRing.png" />
     <None Remove="Assets\character_community_outerRing.png" />
     <EmbeddedResource Include="Assets\character_community_outerRing.png" />
+    <None Remove="Assets\textures" />
   </ItemGroup>
 
   <ItemGroup>
@@ -67,12 +68,18 @@
       <HintPath>$(VSPath)\MelonLoader\net6\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="CoffinTech">
+      <HintPath>$(VSPath)\Mods\CoffinTech.dll</HintPath>
+    </Reference>
     <Reference Include="Il2CppDOTween">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\MelonLoader\Il2CppAssemblies\Il2CppDOTween.dll</HintPath>
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Il2CppDOTween.dll</HintPath>
     </Reference>
     <Reference Include="Il2CppInterop.Runtime">
       <HintPath>$(VSPath)\MelonLoader\net6\Il2CppInterop.Runtime.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Il2CppMAScripts">
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Il2CppMAScripts.dll</HintPath>
     </Reference>
     <Reference Include="Il2Cppmscorlib">
       <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Il2Cppmscorlib.dll</HintPath>
@@ -90,11 +97,17 @@
       <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Il2CppPhaserPort.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Il2CppProCamera2D">
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Il2CppProCamera2D.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppRewired_Core">
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Il2CppRewired_Core.dll</HintPath>
+    </Reference>
     <Reference Include="Il2CppSirenix.Serialization">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\MelonLoader\Il2CppAssemblies\Il2CppSirenix.Serialization.dll</HintPath>
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Il2CppSirenix.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="Il2CppSystem">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\MelonLoader\Il2CppAssemblies\Il2CppSystem.dll</HintPath>
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Il2CppSystem.dll</HintPath>
     </Reference>
     <Reference Include="Il2CppSystem.Core">
       <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Il2CppSystem.Core.dll</HintPath>
@@ -105,7 +118,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Il2CppZenject">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\MelonLoader\Il2CppAssemblies\Il2CppZenject.dll</HintPath>
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Il2CppZenject.dll</HintPath>
     </Reference>
     <Reference Include="MelonLoader">
       <HintPath>$(VSPath)\MelonLoader\net6\MelonLoader.dll</HintPath>
@@ -115,17 +128,20 @@
       <HintPath>$(VSPath)\MelonLoader\net6\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SaveDataInvestigator">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\Mods\SaveDataInvestigator.dll</HintPath>
+    <Reference Include="Unity.Burst">
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Unity.Burst.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Burst.Unsafe">
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Unity.Burst.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Collections">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\MelonLoader\Il2CppAssemblies\Unity.Collections.dll</HintPath>
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Unity.Collections.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Mathematics">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\MelonLoader\Il2CppAssemblies\Unity.Mathematics.dll</HintPath>
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Unity.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\MelonLoader\Il2CppAssemblies\Unity.TextMeshPro.dll</HintPath>
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\UnityEngine.CoreModule.dll</HintPath>
@@ -135,22 +151,36 @@
       <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\UnityEngine.ImageConversionModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\MelonLoader\Il2CppAssemblies\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\MelonLoader\Il2CppAssemblies\UnityEngine.TextRenderingModule.dll</HintPath>
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\MelonLoader\Il2CppAssemblies\UnityEngine.UI.dll</HintPath>
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UIModule">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\VSModded\MelonLoader\Il2CppAssemblies\UnityEngine.UIModule.dll</HintPath>
+      <HintPath>$(VSPath)\MelonLoader\Il2CppAssemblies\UnityEngine.UIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="TestController.cs" />
+    <Compile Remove="InbetweenController.cs" />
+    <Compile Remove="JsonConverter.cs" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="COPY &quot;$(TargetPath)&quot; &quot;$(VSPath)\Mods&quot;" />
+    <Exec
+            Condition="'$(OS)' == 'Windows_NT'"
+            Command="COPY &quot;$(TargetPath)&quot; &quot;$(VSPath)\Mods&quot;" />
+    <Exec
+            Condition="'$(OS)' != 'Windows_NT'"
+            Command="cp &quot;$(TargetPath)&quot; &quot;$(VSPath)/Mods&quot;" />
   </Target>
 
 </Project>

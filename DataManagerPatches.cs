@@ -1,19 +1,14 @@
 ﻿using HarmonyLib;
-using Il2CppNewtonsoft.Json.Linq;
 using Il2CppSystem.Reflection;
-using Il2CppVampireSurvivors.App.Data;
 using Il2CppVampireSurvivors.Data;
-using Il2CppVampireSurvivors.Framework;
-using Il2CppVampireSurvivors.Graphics;
-using Il2CppVampireSurvivors.Objects.Characters;
-using MelonLoader;
 using Newtonsoft.Json;
-using SaveDataInvestigator;
+using CoffinTech.SaveData;
+using CoffinTech.Utils;
 using UnityEngine;
 
 namespace CommunityCharacter
 {
-    static class DataManagerPatches
+    internal static class DataManagerPatches
     {
         [HarmonyPatch(typeof(DataManager))]
         static class DataManagerPatch
@@ -29,26 +24,28 @@ namespace CommunityCharacter
 
         static void SpriteRegister()
         {
+            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            string[] assets =
+            {
+                "character_community.png", "character_community_beta.png", "character_community_decapo.png",
+                "character_community_festa.png", "character_community_hermies.png", "character_community_opal.png",
+                "character_community_tempo.png", "character_community_vam.png", "character_community_zeta.png",
+                "character_community_zeta_black.png", "character_community_zeta_city.png", "character_community_zeta_directer.png",
+                "character_community_zeta_moon.png", "character_community_zeta_seawinds.png", "character_community_zeta_stone.png",
+                "character_community_zeta_sun.png", "character_community_zeta_volcano.png", "character_community_outerRing.png", 
+                "character_community_innerRing.png"
+            };
 
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community.png"), "community", 1);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_beta.png"), "beta", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_decapo.png"), "decapo", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_festa.png"), "festa", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_hermies.png"), "hermies", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_opal.png"), "opal", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_tempo.png"), "tempo", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_vam.png"), "vam", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta.png"), "zeta", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_black.png"), "zeta_black", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_city.png"), "zeta_city", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_directer.png"), "zeta_directer", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_moon.png"), "zeta_moon", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_seawinds.png"), "zeta_seawinds", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_stone.png"), "zeta_stone", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_sun.png"), "zeta_sun", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_zeta_volcano.png"), "zeta_volcano", 4);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_outerRing.png"), "cc_outerRing", 1);
-            SpriteImporter.SpriteStrip(SpriteImporter.LoadTexture("character_community_innerRing.png"), "cc_innerRing", 1);
+            foreach (var asset in assets)
+            {
+                Texture2D texture = CoffinTech.Utils.SpriteImporter.LoadTextureFromAssembly(assembly, "CommunityCharacter.Assets",asset);
+                if (asset == "character_community.png")
+                    SpriteImporter.SpriteStrip(texture, "community", 1);
+                else if (asset == "character_community_outerRing.png" || asset == "character_community_innerRing.png")
+                    SpriteImporter.SpriteStrip(texture, "cc_" + asset.Split("community_").Last().Split('.').First(), 1);
+                else
+                    SpriteImporter.SpriteStrip(texture, asset.Split("community_").Last().Split('.').First(), 4);
+            }
         }
 
         internal static readonly JsonSerializerSettings SerializerSettings = new()
@@ -57,12 +54,13 @@ namespace CommunityCharacter
             NullValueHandling = NullValueHandling.Ignore
         };
 
-        static void CharacterRegister(DataManager __instance)
+        private static void CharacterRegister(DataManager __instance)
         {
             CharacterType characterType = (CharacterType)20000;
             ModOptionsData.SetCharacterId(characterType, "DACommunityCharacter");
+            ModCharacterControllerRegistry.Register(ModCharacterController.GetInstance<CharacterControllerAssistants>(), characterType.ToString());
 
-            __instance._allCharactersJson.Add(characterType.ToString(), BaseStats.Defaults());
+            __instance._allCharactersJson.Add(characterType.ToString(), Assistants.Defaults());
         }
     }
 }

@@ -1,12 +1,9 @@
-﻿using HarmonyLib;
-using Il2CppInterop.Runtime;
-using Il2CppInterop.Runtime.Injection;
-using Il2CppSystem;
-using Il2CppVampireSurvivors.Data;
-using Il2CppVampireSurvivors.Framework;
-using Il2CppVampireSurvivors.Objects.Characters;
+﻿using CommunityCharacter;
 using MelonLoader;
-using UnityEngine;
+
+[assembly: MelonInfo(typeof(CommunityCharacterMod), ModInfo.Name, ModInfo.Version, ModInfo.Author, ModInfo.Download)]
+[assembly: MelonGame("poncle", "Vampire Survivors")]
+//[assembly: MelonAdditionalDependencies("SaveDataInvestigator")]
 
 namespace CommunityCharacter
 {
@@ -14,18 +11,22 @@ namespace CommunityCharacter
     internal static class ModInfo
     {
         public const string Name = "CommunityCharacter";
-        public const string Description = "";
         public const string Author = "Takacomic";
-        public const string Company = "CorruptedInfluences";
-        public const string Version = "0.2.0";
+        public const string Version = "0.3.0";
         public const string Download = "https://github.com/takacomic/.../latest";
     }
     public class CommunityCharacterMod : MelonMod
     {
-        /*public override void OnSceneWasLoaded(int buildIndex, string sceneName)
+        public override void OnInitializeMelon()
         {
-            /*ClassInjector.RegisterTypeInIl2Cpp<TestController>();
-            base.OnSceneWasLoaded(buildIndex, sceneName);
-        }*/
+        }
+        public override void OnSceneWasLoaded(int buildIndex, string sceneName)
+        {
+        }
+
+        public override void OnGUI()
+        {
+
+        }
     }
 }

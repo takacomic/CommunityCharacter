@@ -1,59 +1,54 @@
-﻿
-using Il2CppNewtonsoft.Json.Linq;
+﻿using Il2CppNewtonsoft.Json.Linq;
 using Il2CppVampireSurvivors.Data;
-using Il2CppVampireSurvivors.Framework;
 using Il2CppVampireSurvivors.Objects;
 using Il2CppVampireSurvivors.Objects.Characters;
 
-
 namespace CommunityCharacter
 {
-    internal class Assistants
+    internal static class Assistants
     {
-    }
-    internal static class BaseStats
-    {
-        static float Area = 1f;
-        static float Hp = 100f;
-        static float Cooldown = 0.9f;
-        static float Curse = 1f;
-        static float Duration = 1f;
-        static float Greed = 1f;
-        static float Growth = 1.15f;
-        static float Luck = 1.5f;
-        static float Movespeed = 1f;
-        static double Power = 1d;
-        static float Speed = 1f;
-        static double Revival = 1d;
-        static float Reroll = 20f;
-        static float Skip = 20f;
-        static float Banish = 20f;
+        private const float Area = 1f;
+        private const float Hp = 100f;
+        private const float Cooldown = 0.9f;
+        private const float Curse = 1f;
+        private const float Duration = 1f;
+        private const float Greed = 1f;
+        private const float Growth = 1.15f;
+        private const float Luck = 1.5f;
+        private const float MoveSpeed = 1f;
+        private const double Power = 1d;
+        private const float Speed = 1f;
+        private const double Revival = 1d;
+        private const float Reroll = 20f;
+        private const float Skip = 20f;
+        private const float Banish = 20f;
 
         public static JObject SkinData(string skinType, string name, string texture, string sprite, string suffix = "", int walk = 4, bool unlocked = true)
         {
-            JObject skin = new JObject();
-
-            skin["skinType"] = skinType;
-            skin["name"] = name;
-            skin["textureName"] = texture;
-            skin["spriteName"] = sprite;
-            skin["suffix"] = suffix;
-            skin["walkingFrames"] = walk;
-            skin["unlocked"] = unlocked;
+            JObject skin = new JObject
+            {
+                ["skinType"] = skinType,
+                ["name"] = name,
+                ["textureName"] = texture,
+                ["spriteName"] = sprite,
+                ["suffix"] = suffix,
+                ["walkingFrames"] = walk,
+                ["unlocked"] = unlocked
+            };
 
             return skin;
         }
 
         public static JArray Defaults()
         {
-            JObject jObject = new JObject();
-            JObject level20 = new JObject();
-            JObject level21 = new JObject();
-            JObject level40 = new JObject();
-            JObject level41 = new JObject();
-            JArray exitArray = new JArray();
-            JArray skins = new JArray();
-            JObject skin = SkinData("DEFAULT", "Default", "character_community", "community_01.png");
+            var jObject = new JObject();
+            var level20 = new JObject();
+            var level21 = new JObject();
+            var level40 = new JObject();
+            var level41 = new JObject();
+            var exitArray = new JArray();
+            var skins = new JArray();
+            var skin = SkinData("DEFAULT", "Default", "character_community", "community_01.png");
             skins.Add(skin);
             skins.Add(Zeta.SkinData());
             skins.Add(Hermies.SkinData());
@@ -72,6 +67,7 @@ namespace CommunityCharacter
             jObject["spriteName"] = "community_01.png";
             jObject["currentSkin"] = "50000";
             jObject["walkingFrames"] = 4f;
+            jObject["walkFrameRate"] = 8;
             jObject["description"] = "The one from many, the many from one. Charge ability: Change form";
             jObject["isBought"] = true;
             jObject["price"] = 0f;
@@ -79,7 +75,7 @@ namespace CommunityCharacter
             jObject["cooldown"] = Cooldown;
             jObject["armor"] = 0f;
             jObject["regen"] = 0f;
-            jObject["moveSpeed"] = Movespeed;
+            jObject["moveSpeed"] = MoveSpeed;
             jObject["power"] = Power;
             jObject["area"] = Area;
             jObject["speed"] = Speed;
@@ -95,6 +91,10 @@ namespace CommunityCharacter
             jObject["skips"] = Skip;
             jObject["banish"] = Banish;
             jObject["skins"] = skins;
+            level20["level"] = 20;
+            level21["level"] = 21;
+            level40["level"] = 40;
+            level41["level"] = 41;
             level20["growth"] = 1;
             level21["growth"] = -1;
             level40["growth"] = 1;
@@ -110,25 +110,25 @@ namespace CommunityCharacter
     public static class Zeta
     {
         internal const string SkinType = "50000";
-        static string Name = "Zeta";
-        static string Texture = "character_community_zeta";
-        static string Sprite = "zeta_01.png";
-        static string Suffix = "(Zeta Settetails)";
-        static string HiddenWeapons = @"[ 'SILF_COUNTER', 'SILF2_COUNTER' ]";
+        private const string Name = "Zeta";
+        private const string Texture = "character_community_zeta";
+        private const string Sprite = "zeta_01.png";
+        private const string Suffix = "(Zeta Settetails)";
+        private const string HiddenWeapons = @"[ 'SILF_COUNTER', 'SILF2_COUNTER' ]";
 
-        static float Hp = -50f;
-        static float Movespeed = 0.3f;
-        static float Area = 0.3f;
+        private const float Hp = -50f;
+        private const float MoveSpeed = 0.3f;
+        private const float Area = 0.3f;
 
         internal static void ZetaStatApply(CharacterController character, bool add = true)
         {
-            PlayerModifierStats stats = character.PlayerStats;
+            var stats = character.PlayerStats;
             ModifierStats onEveryLevelUp = new();
-            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
+            var weapons = character._gameManager.WeaponsFacade;
             if (add)
             {
                 stats.MaxHp.Val += Hp;
-                stats.MoveSpeed.Val += Movespeed;
+                stats.MoveSpeed.Val += MoveSpeed;
                 stats.Area.Val += Area;
                 onEveryLevelUp.Power = 0.01f;
                 onEveryLevelUp.Speed = 0.01f;
@@ -140,7 +140,7 @@ namespace CommunityCharacter
             else
             {
                 stats.MaxHp.Val -= Hp;
-                stats.MoveSpeed.Val -= Movespeed;
+                stats.MoveSpeed.Val -= MoveSpeed;
                 stats.Area.Val -= Area;
                 weapons.RemoveHiddenWeapon(WeaponType.SILF_COUNTER, character);
                 weapons.RemoveHiddenWeapon(WeaponType.SILF2_COUNTER, character);
@@ -148,23 +148,26 @@ namespace CommunityCharacter
             character._playerStats =  stats;
             character._onEveryLevelUp =  onEveryLevelUp;
         }
-        static JObject OnEveryLevelUp()
-        {
-            JObject jObject = new JObject();
 
-            jObject["power"] = 0.01f;
-            jObject["speed"] = 0.01f;
-            jObject["duration"] = 0.01f;
-            jObject["area"] = 0.01f;
+        private static JObject OnEveryLevelUp()
+        {
+            var jObject = new JObject
+            {
+                ["power"] = 0.01f,
+                ["speed"] = 0.01f,
+                ["duration"] = 0.01f,
+                ["area"] = 0.01f
+            };
 
             return jObject;
         }
         public static JObject SkinData()
         {
-            JObject skin = BaseStats.SkinData(SkinType, Name, Texture, Sprite, Suffix);
+            var skin = Assistants.SkinData(SkinType, Name, Texture, Sprite, Suffix);
             skin["maxHp"] = Hp;
-            skin["moveSpeed"] = Movespeed;
+            skin["moveSpeed"] = MoveSpeed;
             skin["area"] = Area;
+            skin["walkFrameRate"] = 8;
             skin["description"] = "Calls upon the Directer at critical moments. Starts with a hidden Cygnus and Zharptysia.Gains + 1 % Might, Area, Speed and Duration every level.";
             skin["hiddenWeapons"] = JArray.Parse(HiddenWeapons);
             skin["onEveryLevelUp"] = OnEveryLevelUp();
@@ -175,27 +178,26 @@ namespace CommunityCharacter
     internal static class Hermies
     {
         internal const string SkinType = "50001";
-        static string Name = "Hermies";
-        static string Texture = "character_community_hermies";
-        static string Sprite = "hermies_01.png";
-        static string Suffix = "(Hermies)";
-        static string HiddenWeapons = @"[ 'LAUREL', 'TRAPANO2' ]";
+        private const string Name = "Hermies";
+        private const string Texture = "character_community_hermies";
+        private const string Sprite = "hermies_01.png";
+        private const string Suffix = "(Hermies)";
+        private const string HiddenWeapons = @"[ 'LAUREL', 'TRAPANO2' ]";
 
-        static float Movespeed = 2f;
-        static float Speed = 0.5f;
-        static float Regen = 1f;
-        static float Defang = 0.1f;
-        
+        private const float MoveSpeed = 2f;
+        private const float Speed = 0.5f;
+        private const float Regen = 0.5f;
+        private const float Defang = 0.1f;
+
         internal static void HermiesStatApply(CharacterController character, bool add = true)
         {
-            PlayerModifierStats stats = character.PlayerStats;
+            var stats = character.PlayerStats;
+            var weapons = character._gameManager.WeaponsFacade;
             ModifierStats onEveryLevelUp = new();
-            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
-            onEveryLevelUp = new();
             if (add)
             {
                 stats.Speed.Val += Speed;
-                stats.MoveSpeed.Val += Movespeed;
+                stats.MoveSpeed.Val += MoveSpeed;
                 stats.Regen.Val += Regen;
                 stats.Defang += Defang;
                 onEveryLevelUp.Regen = 0.05f;
@@ -205,7 +207,7 @@ namespace CommunityCharacter
             else
             {
                 stats.Speed.Val -= Speed;
-                stats.MoveSpeed.Val -= Movespeed;
+                stats.MoveSpeed.Val -= MoveSpeed;
                 stats.Regen.Val -= Regen;
                 stats.Defang -= Defang;
                 weapons.RemoveHiddenWeapon(WeaponType.LAUREL, character);
@@ -214,18 +216,20 @@ namespace CommunityCharacter
             character._playerStats = stats;
             character._onEveryLevelUp = onEveryLevelUp;
         }
-        static JObject OnEveryLevelUp()
-        {
-            JObject jObject = new JObject();
 
-            jObject["regen"] = 0.05f;
+        private static JObject OnEveryLevelUp()
+        {
+            var jObject = new JObject
+            {
+                ["regen"] = 0.025f
+            };
 
             return jObject;
         }
         public static JObject SkinData()
         {
-            JObject skin = BaseStats.SkinData(SkinType, Name, Texture, Sprite, Suffix);
-            skin["moveSpeed"] = Movespeed;
+            var skin = Assistants.SkinData(SkinType, Name, Texture, Sprite, Suffix);
+            skin["moveSpeed"] = MoveSpeed;
             skin["speed"] = Speed;
             skin["regen"] = Regen;
             skin["defang"] = Defang;
@@ -239,44 +243,40 @@ namespace CommunityCharacter
     internal static class Opal
     {
         internal const string SkinType = "50002";
-        static string Name = "Opal";
-        static string Texture = "character_community_opal";
-        static string Sprite = "opal_01.png";
-        static string Suffix = "(Opal)";
-        static string HiddenWeapons = @"[ 'EX_GAEA2' ]";
+        private const string Name = "Opal";
+        private const string Texture = "character_community_opal";
+        private const string Sprite = "opal_01.png";
+        private const string Suffix = "(Opal)";
+        private const string HiddenWeapons = @"[ 'TRIASSO3' ]";
 
-        static float Movespeed = 0.5f;
-        static float Regen = 5f;
-        static float Cooldown = -0.1f;
-        
+        private const float MoveSpeed = 0.5f;
+        private const float Regen = 5f;
+
         internal static void OpalStatApply(CharacterController character, bool add = true)
         {
-            PlayerModifierStats stats = character.PlayerStats;
+            var stats = character.PlayerStats;
             ModifierStats onEveryLevelUp = new();
-            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
+            var weapons = character._gameManager.WeaponsFacade;
             if (add)
             {
-                stats.Cooldown.Val += Cooldown;
-                stats.MoveSpeed.Val += Movespeed;
+                stats.MoveSpeed.Val += MoveSpeed;
                 stats.Regen.Val += Regen;
-                weapons.AddHiddenWeapon(WeaponType.EX_GAEA2, character);
+                weapons.AddHiddenWeapon(WeaponType.TRIASSO3, character);
             }
             else
             {
-                stats.Cooldown.Val -= Cooldown;
-                stats.MoveSpeed.Val -= Movespeed;
+                stats.MoveSpeed.Val -= MoveSpeed;
                 stats.Regen.Val -= Regen;
-                weapons.RemoveHiddenWeapon(WeaponType.EX_GAEA2, character);
+                weapons.RemoveHiddenWeapon(WeaponType.TRIASSO3, character);
             }
             character._playerStats = stats;
             character._onEveryLevelUp = onEveryLevelUp;
         }
         public static JObject SkinData()
         {
-            JObject skin = BaseStats.SkinData(SkinType, Name, Texture, Sprite, Suffix);
-            skin["moveSpeed"] = Movespeed;
+            var skin = Assistants.SkinData(SkinType, Name, Texture, Sprite, Suffix);
+            skin["moveSpeed"] = MoveSpeed;
             skin["regen"] = Regen;
-            skin["cooldown"] = Cooldown;
             skin["description"] = "Has a hidden Embrace of Gaea. Can Fly. Gains +0.25 Charm and Summons light sources every level.";
             skin["hiddenWeapons"] = JArray.Parse(HiddenWeapons);
 
@@ -286,21 +286,21 @@ namespace CommunityCharacter
     internal static class Festa
     {
         internal const string SkinType = "50003";
-        static string Name = "Festa";
-        static string Texture = "character_community_festa";
-        static string Sprite = "festa_01.png";
-        static string Suffix = "(Festa)";
-        static string HiddenWeapons = @"[ 'JUBILEE' ]";
+        private const string Name = "Festa";
+        private const string Texture = "character_community_festa";
+        private const string Sprite = "festa_01.png";
+        private const string Suffix = "(Festa)";
+        private const string HiddenWeapons = @"[ 'JUBILEE' ]";
 
-        static float Luck = 1.5f;
-        static float Greed = 0.5f;
-        static float Regen = 1f;
-        
+        private const float Luck = 0.5f;
+        private const float Greed = 0.5f;
+        private const float Regen = 1f;
+
         internal static void FestaStatApply(CharacterController character, bool add = true)
         {
-            PlayerModifierStats stats = character.PlayerStats;
+            var stats = character.PlayerStats;
             ModifierStats onEveryLevelUp = new();
-            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
+            var weapons = character._gameManager.WeaponsFacade;
             if (add)
             {
                 stats.Luck.Val += Luck;
@@ -319,17 +319,19 @@ namespace CommunityCharacter
             character._playerStats = stats;
             character._onEveryLevelUp = onEveryLevelUp;
         }
-        static JObject OnEveryLevelUp()
-        {
-            JObject jObject = new JObject();
 
-            jObject["luck"] = 0.01f;
+        private static JObject OnEveryLevelUp()
+        {
+            var jObject = new JObject
+            {
+                ["luck"] = 0.01f
+            };
 
             return jObject;
         }
         public static JObject SkinData()
         {
-            JObject skin = BaseStats.SkinData(SkinType, Name, Texture, Sprite, Suffix);
+            var skin = Assistants.SkinData(SkinType, Name, Texture, Sprite, Suffix);
             skin["luck"] = Luck;
             skin["regen"] = Regen;
             skin["greed"] = Greed;
@@ -343,24 +345,24 @@ namespace CommunityCharacter
     internal static class Beta
     {
         internal const string SkinType = "50004";
-        static string Name = "Beta";
-        static string Texture = "character_community_beta";
-        static string Sprite = "beta_01.png";
-        static string Suffix = "(Beta)";
-        static string HiddenWeapons = @"[ 'VESPERS' ]";
+        private const string Name = "Beta";
+        private const string Texture = "character_community_beta";
+        private const string Sprite = "beta_01.png";
+        private const string Suffix = "(Beta)";
+        private const string HiddenWeapons = @"[ 'FOLLOWER_KNIFE1' ]";
 
-        static float Power = 0.2f;
-        static float Speed = 0.2f;
-        static float Duration = 0.2f;
-        static float Area = 0.2f;
-        static float Growth = 0.25f;
-        static float Amount = 1f;
-        
+        private const float Power = 0.2f;
+        private const float Speed = 0.2f;
+        private const float Duration = 0.2f;
+        private const float Area = 0.2f;
+        private const float Growth = 0.25f;
+        private const float Amount = 1f;
+
         internal static void BetaStatApply(CharacterController character, bool add = true)
         {
-            PlayerModifierStats stats = character.PlayerStats;
+            var stats = character.PlayerStats;
             ModifierStats onEveryLevelUp = new();
-            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
+            var weapons = character._gameManager.WeaponsFacade;
             if (add)
             {
                 stats.Power.Val += Power;
@@ -370,7 +372,7 @@ namespace CommunityCharacter
                 stats.Growth.Val += Growth;
                 stats.Amount.Val += Amount;
                 onEveryLevelUp.Growth = 0.01f;
-                weapons.AddHiddenWeapon(WeaponType.VESPERS, character);
+                weapons.AddHiddenWeapon(WeaponType.FOLLOWER_KNIFE1, character);
             }
             else
             {
@@ -380,22 +382,24 @@ namespace CommunityCharacter
                 stats.Area.Val -= Area;
                 stats.Growth.Val -= Growth;
                 stats.Amount.Val -= Amount;
-                weapons.RemoveHiddenWeapon(WeaponType.VESPERS, character);
+                weapons.RemoveHiddenWeapon(WeaponType.FOLLOWER_KNIFE1, character);
             }
             character._playerStats = stats;
             character._onEveryLevelUp = onEveryLevelUp;
         }
-        static JObject OnEveryLevelUp()
-        {
-            JObject jObject = new JObject();
 
-            jObject["growth"] = 0.01f;
+        private static JObject OnEveryLevelUp()
+        {
+            var jObject = new JObject
+            {
+                ["growth"] = 0.01f
+            };
 
             return jObject;
         }
         public static JObject SkinData()
         {
-            JObject skin = BaseStats.SkinData(SkinType, Name, Texture, Sprite, Suffix);
+            var skin = Assistants.SkinData(SkinType, Name, Texture, Sprite, Suffix);
             skin["power"] = Power;
             skin["speed"] = Speed;
             skin["duration"] = Duration;
@@ -412,41 +416,37 @@ namespace CommunityCharacter
     internal static class TempoDiMelma
     {
         internal const string SkinType = "50005";
-        static string Name = "Tempo";
-        static string Texture = "character_community_tempo";
-        static string Sprite = "tempo_01.png";
-        static string Suffix = "(Tempo di Melma)";
-        static string HiddenWeapons = @"[ 'STIGRANGATTI' ]";
+        private const string Name = "Tempo";
+        private const string Texture = "character_community_tempo";
+        private const string Sprite = "tempo_01.png";
+        private const string Suffix = "(Tempo di Melma)";
+        private const string HiddenWeapons = @"[ 'STIGRANGATTI' ]";
 
-        static float Hp = 100f;
-        static float Armor = 3f;
-        static float Power = 0.1f;
-        static float Speed = 0.1f;
-        static float Duration = 0.1f;
-        static float Area = 0.1f;
-        static float Regen = 1f;
-        static float Magnet = 0.25f;
-        static float Amount = 2f;
-        private static float MagnetChange;
+        private const float Hp = 100f;
+        private const float Power = 0.1f;
+        private const float Speed = 0.1f;
+        private const float Duration = 0.1f;
+        private const float Area = 0.1f;
+        private const float Regen = 1f;
+        private const float Magnet = 0.25f;
+        private static float _magnetChange;
         
         internal static void TempoStatApply(CharacterController character, bool add = true)
         {
-            PlayerModifierStats stats = character.PlayerStats;
+            var stats = character.PlayerStats;
             ModifierStats onEveryLevelUp = new();
-            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
-            MagnetZone magnet = character._magnet;
+            var weapons = character._gameManager.WeaponsFacade;
+            var magnet = character._magnet;
             if (add)
             {
                 stats.Power.Val += Power;
                 stats.Speed.Val += Speed;
                 stats.Duration.Val += Duration;
                 stats.Area.Val += Area;
-                stats.Armor.Val += Armor;
-                stats.Amount.Val += Amount;
                 stats.Regen.Val += Regen;
                 stats.MaxHp.Val += Hp;
                 stats.Magnet.Val += Magnet;
-                magnet.Radius += MagnetChange = magnet.Radius * Magnet;
+                magnet.Radius += _magnetChange = magnet.Radius * Magnet;
                 magnet.RefreshSize();
                 onEveryLevelUp.MaxHp = 1f;
                 onEveryLevelUp.Magnet = 0.01f;
@@ -458,12 +458,10 @@ namespace CommunityCharacter
                 stats.Speed.Val -= Speed;
                 stats.Duration.Val -= Duration;
                 stats.Area.Val -= Area;
-                stats.Armor.Val -= Armor;
-                stats.Amount.Val -= Amount;
                 stats.Regen.Val -= Regen;
                 stats.MaxHp.Val -= Hp;
                 stats.Magnet.Val -= Magnet;
-                magnet.Radius -= MagnetChange;
+                magnet.Radius -= _magnetChange;
                 magnet.RefreshSize();
                 weapons.RemoveHiddenWeapon(WeaponType.STIGRANGATTI, character);
             }
@@ -471,18 +469,20 @@ namespace CommunityCharacter
             character._onEveryLevelUp = onEveryLevelUp;
             character._magnet = magnet;
         }
-        static JObject OnEveryLevelUp()
-        {
-            JObject jObject = new JObject();
 
-            jObject["maxHp"] = 1f;
-            jObject["magnet"] = 0.01f;
+        private static JObject OnEveryLevelUp()
+        {
+            var jObject = new JObject
+            {
+                ["maxHp"] = 1f,
+                ["magnet"] = 0.01f
+            };
 
             return jObject;
         }
         public static JObject SkinData()
         {
-            JObject skin = BaseStats.SkinData(SkinType, Name, Texture, Sprite, Suffix);
+            var skin = Assistants.SkinData(SkinType, Name, Texture, Sprite, Suffix);
             skin["maxHp"] = Hp;
             skin["regen"] = Regen;
             skin["magnet"] = Magnet;
@@ -490,8 +490,6 @@ namespace CommunityCharacter
             skin["speed"] = Speed;
             skin["duration"] = Duration;
             skin["area"] = Area;
-            skin["armor"] = Armor;
-            skin["amount"] = Amount;
             skin["description"] = "Gains stat bonuses upon opening chests and after killing a certain amount of enemies. Has a Hidden Vicious Hunger. Gains +1 Max HP and +1% Magnet every level.";
             skin["hiddenWeapons"] = JArray.Parse(HiddenWeapons);
             skin["onEveryLevelUp"] = OnEveryLevelUp();
@@ -502,28 +500,27 @@ namespace CommunityCharacter
     internal static class VamAndPyre
     {
         internal const string SkinType = "50006";
-        static string Name = "Vam&Pyre";
-        static string Texture = "character_community_vam";
-        static string Sprite = "vam_01.png";
-        static string Suffix = "(Vam and Pyre)";
-        static string HiddenWeapons = @"[ 'MISSPELL2' ]";
+        private const string Name = "Vam&Pyre";
+        private const string Texture = "character_community_vam";
+        private const string Sprite = "vam_01.png";
+        private const string Suffix = "(Vam and Pyre)";
+        private const string HiddenWeapons = @"[ 'MISSPELL2' ]";
 
-        static float Hp = -25f;
-        static float Movespeed = -0.1f;
-        static float Cooldown = -0.05f;
-        static float Power = 0.3f;
-        static float Speed = 0.3f;
-        static float Duration = 0.3f;
-        static float Area = 0.3f;
-        static float Luck = 0.2f;
-        static float Amount = 1f;
-        static float Greed = 0.99f;
+        private const float Hp = -25f;
+        private const float MoveSpeed = -0.1f;
+        private const float Power = 0.3f;
+        private const float Speed = 0.3f;
+        private const float Duration = 0.3f;
+        private const float Area = 0.3f;
+        private const float Luck = 0.2f;
+        private const float Amount = 1f;
+        private const float Greed = 0.99f;
 
         internal static void VamStatApply(CharacterController character, bool add = true)
         {
-            PlayerModifierStats stats = character.PlayerStats;
+            var stats = character.PlayerStats;
             ModifierStats onEveryLevelUp = new();
-            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
+            var weapons = character._gameManager.WeaponsFacade;
             if (add)
             {
                 stats.Power.Val += Power;
@@ -532,9 +529,8 @@ namespace CommunityCharacter
                 stats.Area.Val += Area;
                 stats.Luck.Val += Luck;
                 stats.Amount.Val += Amount;
-                stats.Cooldown.Val += Cooldown;
                 stats.MaxHp.Val += Hp;
-                stats.MoveSpeed.Val += Movespeed;
+                stats.MoveSpeed.Val += MoveSpeed;
                 stats.Greed.Val += Greed;
                 onEveryLevelUp.Power = 0.02f;
                 weapons.AddHiddenWeapon(WeaponType.MISSPELL2, character);
@@ -547,9 +543,8 @@ namespace CommunityCharacter
                 stats.Area.Val -= Area;
                 stats.Luck.Val -= Luck;
                 stats.Amount.Val -= Amount;
-                stats.Cooldown.Val -= Cooldown;
                 stats.MaxHp.Val -= Hp;
-                stats.MoveSpeed.Val -= Movespeed;
+                stats.MoveSpeed.Val -= MoveSpeed;
                 stats.Greed.Val -= Greed;
                 weapons.RemoveHiddenWeapon(WeaponType.MISSPELL2, character);
             }
@@ -557,20 +552,20 @@ namespace CommunityCharacter
             character._onEveryLevelUp = onEveryLevelUp;
         }
 
-        static JObject OnEveryLevelUp()
+        private static JObject OnEveryLevelUp()
         {
-            JObject jObject = new JObject();
-
-            jObject["power"] = 0.02f;
+            var jObject = new JObject
+            {
+                ["power"] = 0.02f
+            };
 
             return jObject;
         }
         public static JObject SkinData()
         {
-            JObject skin = BaseStats.SkinData(SkinType, Name, Texture, Sprite, Suffix);
+            var skin = Assistants.SkinData(SkinType, Name, Texture, Sprite, Suffix);
             skin["maxHp"] = Hp;
-            skin["moveSpeed"] = Movespeed;
-            skin["cooldown"] = Cooldown;
+            skin["moveSpeed"] = MoveSpeed;
             skin["power"] = Power;
             skin["speed"] = Speed;
             skin["duration"] = Duration;
@@ -588,45 +583,48 @@ namespace CommunityCharacter
     internal static class DeCapo
     {
         internal const string SkinType = "50007";
-        static string Name = "DeCapo";
-        static string Texture = "character_community_decapo";
-        static string Sprite = "decapo_01.png";
-        static string Suffix = "(De Capo)";
-        static string HiddenWeapons = @"[ 'SIRE' ]";
+        private const string Name = "DeCapo";
+        private const string Texture = "character_community_decapo";
+        private const string Sprite = "decapo_01.png";
+        private const string Suffix = "(De Capo)";
+        private const string HiddenWeapons = @"[ 'SIRE' ]";
 
-        static float Armor = 5f;
-        static float Movespeed = -0.2f;
-        static float Growth = 0.25f;
-        static float Magnet = 1f;
-        static int Charm = 30;
-        private static float MagnetChange;
+        private const float Hp = 100;
+        private const float Armor = 5f;
+        private const float MoveSpeed = -0.2f;
+        private const float Growth = 0.25f;
+        private const float Magnet = 1f;
+        private const int Charm = 30;
+        private static float _magnetChange;
         
         internal static void DeCapoStatApply(CharacterController character, bool add = true)
         {
-            PlayerModifierStats stats = character.PlayerStats;
+            var stats = character.PlayerStats;
             ModifierStats onEveryLevelUp = new();
-            WeaponsFacade weapons = character._gameManager.WeaponsFacade;
-            MagnetZone magnet = character._magnet;
+            var weapons = character._gameManager.WeaponsFacade;
+            var magnet = character._magnet;
             if (add)
             {
+                stats.MaxHp.Val += Hp;
                 stats.Armor.Val += Armor;
                 stats.Growth.Val += Growth;
                 stats.Charm += Charm;
-                stats.MoveSpeed.Val += Movespeed;
+                stats.MoveSpeed.Val += MoveSpeed;
                 stats.Magnet.Val += Magnet;
-                magnet.Radius += MagnetChange = magnet.Radius * Magnet;
+                magnet.Radius += _magnetChange = magnet.Radius * Magnet;
                 magnet.RefreshSize();
                 onEveryLevelUp.Curse = 0.01f;
                 weapons.AddHiddenWeapon(WeaponType.SIRE, character);
             }
             else
             {
+                stats.MaxHp.Val -= Hp;
                 stats.Armor.Val -= Armor;
                 stats.Growth.Val -= Growth;
                 stats.Charm -= Charm;
-                stats.MoveSpeed.Val -= Movespeed;
+                stats.MoveSpeed.Val -= MoveSpeed;
                 stats.Magnet.Val -= Magnet;
-                magnet.Radius -= MagnetChange;
+                magnet.Radius -= _magnetChange;
                 magnet.RefreshSize();
                 weapons.RemoveHiddenWeapon(WeaponType.SIRE, character);
             }
@@ -634,23 +632,26 @@ namespace CommunityCharacter
             character._onEveryLevelUp = onEveryLevelUp;
             character._magnet = magnet;
         }
-        static JObject OnEveryLevelUp()
-        {
-            JObject jObject = new JObject();
 
-            jObject["curse"] = 0.01f;
+        private static JObject OnEveryLevelUp()
+        {
+            var jObject = new JObject
+            {
+                ["curse"] = 0.01f
+            };
 
             return jObject;
         }
         public static JObject SkinData()
         {
-            JObject skin = BaseStats.SkinData(SkinType, Name, Texture, Sprite, Suffix);
+            var skin = Assistants.SkinData(SkinType, Name, Texture, Sprite, Suffix);
+            skin["maxHp"] = Hp;
             skin["armor"] = Armor;
-            skin["moveSpeed"] = Movespeed;
+            skin["moveSpeed"] = MoveSpeed;
             skin["growth"] = Growth;
             skin["magnet"] = Magnet;
             skin["charm"] = Charm;
-            skin["description"] = "Pulls enemies towards itself. Retaliates. Has a hidden Gorgeous moon and +50 Charm. Gains +1% Curse every level.";
+            skin["description"] = "Pulls enemies towards itself. Retaliates. Has a hidden Gorgeous moon and +30 Charm. Gains +1% Curse every level.";
             skin["hiddenWeapons"] = JArray.Parse(HiddenWeapons);
             skin["onEveryLevelUp"] = OnEveryLevelUp();
 

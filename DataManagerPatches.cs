@@ -58,7 +58,7 @@ namespace CommunityCharacter
         {
             CharacterType characterType = (CharacterType)20000;
             ModOptionsData.SetCharacterId(characterType, "DACommunityCharacter");
-            ModCharacterControllerRegistry.Register(ModCharacterController.GetInstance<CharacterControllerAssistants>(), characterType.ToString());
+            ModCharacterControllerRegistry.Register(ModCharacterController.GetInstance<CharacterControllerAssistants>(), characterType);
 
             __instance._allCharactersJson.Add(characterType.ToString(), Assistants.Defaults());
         }
